@@ -29,7 +29,7 @@ public class SpringServiceLoader implements ISpringServiceLoader {
 
     private static final int PRIORITY   = 100;
 
-    private Map<String, Object> _beanCache;
+    private final Map<String, Object> _beanCache = new HashMap<>();
 
     @Config(path="spring.config")
     protected String _cfgFile;
@@ -38,7 +38,6 @@ public class SpringServiceLoader implements ISpringServiceLoader {
 
     @OnActivate
     public void init() {
-        this._beanCache = new HashMap<>();
         this._ctx = new ClassPathXmlApplicationContext(new String[] { this._cfgFile });
     }
 
