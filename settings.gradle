@@ -1,3 +1,4 @@
 rootProject.name = 'uapi.facility'
 
 include 'uapi.service.spring'
+include 'uapi.servlet'
