@@ -1,5 +1,6 @@
 package uapi.servlet;
 
+import uapi.GeneralException;
 import uapi.Tags;
 import uapi.app.AppErrors;
 import uapi.app.AppException;
@@ -12,6 +13,7 @@ import uapi.rx.Looper;
 import uapi.service.IRegistry;
 import uapi.service.IService;
 import uapi.service.ITagged;
+import uapi.servlet.internal.FilterConfigProvider;
 
 import javax.servlet.*;
 import java.io.IOException;
@@ -88,7 +90,12 @@ public class ServletBootstrap implements Filter {
                     .build();
         }
 
-        // TODO: read config from filterConfig
+        // parse filter configuration
+        FilterConfigProvider cfgProvider = this._svcRegistry.findService(FilterConfigProvider.class);
+        if (cfgProvider == null) {
+            throw new GeneralException("The servlet config provider can't be found in registry");
+        }
+        cfgProvider.parse(filterConfig);
 
         // All base service must be activated
         Looper.on(basicSvcTags).foreach(this._svcRegistry::activateTaggedService);

@@ -1,0 +1,9 @@
+app:
+  active-profile: ServletAppProfile
+
+profiles:
+  - name: ServletAppProfile
+    model: include
+    matching: satisfy-any
+    tags:
+      - ServletApp

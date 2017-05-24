@@ -19,6 +19,13 @@ ext.project_version = getProjectVersion()
 ext.publish_repo    = getMavenRepo()
 
 allprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+        }
+    }
+
     repositories {
         mavenCentral()
         jcenter()
