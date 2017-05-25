@@ -17,7 +17,7 @@ apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
 dependencies {
-    compile project(':uapi.servlet')
+    compile project(':uapi.app.web')
     compile (
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",
@@ -30,6 +30,7 @@ dependencies {
     compileOnly(
             "javax.servlet:javax.servlet-api:${javax_servlet_version}"
     )
+    runtime project(':uapi.app.terminal')
 }
 
 gretty {

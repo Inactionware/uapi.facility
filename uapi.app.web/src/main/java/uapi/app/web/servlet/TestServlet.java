@@ -1,4 +1,4 @@
-package uapi.servlet;
+package uapi.app.web.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

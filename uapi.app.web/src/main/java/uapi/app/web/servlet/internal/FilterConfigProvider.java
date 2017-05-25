@@ -1,4 +1,4 @@
-package uapi.servlet.internal;
+package uapi.app.web.servlet.internal;
 
 import uapi.Tags;
 import uapi.config.IConfigProvider;

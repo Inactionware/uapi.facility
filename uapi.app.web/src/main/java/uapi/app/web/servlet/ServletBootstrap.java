@@ -1,4 +1,4 @@
-package uapi.servlet;
+package uapi.app.web.servlet;
 
 import uapi.GeneralException;
 import uapi.Tags;
@@ -7,13 +7,13 @@ import uapi.app.AppException;
 import uapi.app.internal.AppServiceLoader;
 import uapi.app.internal.SystemShuttingDownEvent;
 import uapi.app.internal.SystemStartingUpEvent;
+import uapi.app.web.servlet.internal.FilterConfigProvider;
 import uapi.common.CollectionHelper;
 import uapi.event.IEventBus;
 import uapi.rx.Looper;
 import uapi.service.IRegistry;
 import uapi.service.IService;
 import uapi.service.ITagged;
-import uapi.servlet.internal.FilterConfigProvider;
 
 import javax.servlet.*;
 import java.io.IOException;
