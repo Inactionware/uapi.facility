@@ -13,7 +13,6 @@ import com.google.common.base.Strings;
 import uapi.Tags;
 import uapi.common.ArgumentChecker;
 import uapi.common.Pair;
-import uapi.config.ICliConfigProvider;
 import uapi.config.IConfigProvider;
 import uapi.config.IConfigTracer;
 import uapi.log.ILogger;

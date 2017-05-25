@@ -13,13 +13,11 @@ import uapi.Tags;
 import uapi.UapiException;
 import uapi.app.AppErrors;
 import uapi.app.AppException;
-import uapi.app.ExitSystemRequest;
 import uapi.app.internal.AppServiceLoader;
 import uapi.app.internal.SystemShuttingDownEvent;
 import uapi.app.internal.SystemStartingUpEvent;
 import uapi.app.terminal.internal.CliConfigProvider;
 import uapi.common.CollectionHelper;
-import uapi.config.ICliConfigProvider;
 import uapi.event.IAttributedEventHandler;
 import uapi.event.IEventBus;
 import uapi.rx.Looper;
@@ -44,7 +42,7 @@ public class Bootstrap {
             Tags.PROFILE, Tags.APPLICATION
     };
 
-    private static final AppServiceLoader appSvcLoader = new AppServiceLoader();
+    private static AppServiceLoader appSvcLoader = new AppServiceLoader();
     private static final Semaphore semaphore = new Semaphore(0);
 
     public static void main(String[] args) {
@@ -104,7 +102,7 @@ public class Bootstrap {
             throw AppException.builder()
                     .errorCode(AppErrors.SPECIFIC_SERVICE_NOT_FOUND)
                     .variables(new AppErrors.SpecificServiceNotFound()
-                            .serviceType(ICliConfigProvider.class.getCanonicalName()))
+                            .serviceType(CliConfigProvider.class.getCanonicalName()))
                     .build();
         }
         cliCfgProvider.parse(args);

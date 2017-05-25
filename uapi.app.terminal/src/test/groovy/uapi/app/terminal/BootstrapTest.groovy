@@ -14,7 +14,7 @@ import uapi.app.AppException
 import uapi.app.internal.AppServiceLoader
 import uapi.app.internal.SystemShuttingDownEvent
 import uapi.app.internal.SystemStartingUpEvent
-import uapi.config.ICliConfigProvider
+import uapi.app.terminal.internal.CliConfigProvider
 import uapi.event.IEventBus
 import uapi.service.IRegistry
 import uapi.service.IService
@@ -27,12 +27,12 @@ class BootstrapTest extends Specification {
 
     def 'Test start up with zero registry'() {
         given:
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> []
         }
 
         when:
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         thrown(AppException)
@@ -41,12 +41,12 @@ class BootstrapTest extends Specification {
     def 'Test start up with more registry'() {
         given:
         def registry = Mock(IRegistryService)
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry, registry]
         }
 
         when:
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         thrown(AppException)
@@ -56,12 +56,12 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> null
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
         when:
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         thrown(AppException)
@@ -71,12 +71,12 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> registry
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
         when:
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         thrown(AppException)
@@ -90,20 +90,20 @@ class BootstrapTest extends Specification {
             1 * fire(_ as SystemStartingUpEvent)
             1 * fire(_ as SystemShuttingDownEvent, true)
         }
-        registry.findService(ICliConfigProvider.class) >> Mock(ICliConfigProvider) {
+        registry.findService(CliConfigProvider.class) >> Mock(CliConfigProvider) {
             1 * parse(_)
         }
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
         when:
         def t = new Thread({
             Thread.sleep(1000)
-            uapi.app.Bootstrap.semaphore.release()
+            Bootstrap.semaphore.release()
         })
         t.start()
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         noExceptionThrown()
@@ -120,20 +120,20 @@ class BootstrapTest extends Specification {
             1 * fire(_ as SystemStartingUpEvent)
             1 * fire(_ as SystemShuttingDownEvent, true)
         }
-        registry.findService(ICliConfigProvider.class) >> Mock(ICliConfigProvider) {
+        registry.findService(CliConfigProvider.class) >> Mock(CliConfigProvider) {
             1 * parse(_)
         }
-        uapi.app.Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry, taggedSvc]
         }
 
         when:
         def t = new Thread({
             Thread.sleep(1000)
-            uapi.app.Bootstrap.semaphore.release()
+            Bootstrap.semaphore.release()
         })
         t.start()
-        uapi.app.Bootstrap.main([] as String[])
+        Bootstrap.main([] as String[])
 
         then:
         noExceptionThrown()
