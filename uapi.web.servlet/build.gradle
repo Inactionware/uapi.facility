@@ -18,11 +18,9 @@ dependencies {
             "uapi:uapi.service:${uapi_cornerstone_version}",
             "uapi:uapi.config:${uapi_cornerstone_version}",
             "uapi:uapi.event:${uapi_cornerstone_version}",
-            "uapi:uapi.behavior:${uapi_cornerstone_version}",
-            "uapi:uapi.app:${uapi_cornerstone_version}"
+            "uapi:uapi.behavior:${uapi_cornerstone_version}"
     )
     compile project(':uapi.web')
-    compile project(':uapi.web.servlet')
     compileOnly(
             "javax.servlet:javax.servlet-api:${javax_servlet_version}"
     )
