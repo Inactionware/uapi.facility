@@ -9,8 +9,10 @@
 
 package uapi.app.terminal
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import uapi.app.AppException
+import uapi.app.SystemBootstrap
 import uapi.app.internal.AppServiceLoader
 import uapi.app.internal.SystemShuttingDownEvent
 import uapi.app.internal.SystemStartingUpEvent
@@ -27,7 +29,7 @@ class BootstrapTest extends Specification {
 
     def 'Test start up with zero registry'() {
         given:
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> []
         }
 
@@ -41,7 +43,7 @@ class BootstrapTest extends Specification {
     def 'Test start up with more registry'() {
         given:
         def registry = Mock(IRegistryService)
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry, registry]
         }
 
@@ -56,7 +58,7 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> null
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
@@ -71,7 +73,7 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> registry
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
@@ -86,14 +88,14 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         1 * registry.findService(IRegistry.class) >> registry
-        1 * registry.findService(IEventBus.class) >> Mock(IEventBus) {
+        3 * registry.findService(IEventBus.class) >> Mock(IEventBus) {
             1 * fire(_ as SystemStartingUpEvent)
             1 * fire(_ as SystemShuttingDownEvent, true)
         }
         registry.findService(CliConfigProvider.class) >> Mock(CliConfigProvider) {
             1 * parse(_)
         }
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry]
         }
 
@@ -116,14 +118,14 @@ class BootstrapTest extends Specification {
             1 * getTags() >> ['tag']
         }
         1 * registry.findService(IRegistry.class) >> registry
-        1 * registry.findService(IEventBus.class) >> Mock(IEventBus) {
+        3 * registry.findService(IEventBus.class) >> Mock(IEventBus) {
             1 * fire(_ as SystemStartingUpEvent)
             1 * fire(_ as SystemShuttingDownEvent, true)
         }
         registry.findService(CliConfigProvider.class) >> Mock(CliConfigProvider) {
             1 * parse(_)
         }
-        Bootstrap.appSvcLoader = Mock(AppServiceLoader) {
+        SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
             loadServices() >> [registry, taggedSvc]
         }
 

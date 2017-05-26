@@ -13,19 +13,14 @@ import uapi.Tags;
 import uapi.UapiException;
 import uapi.app.AppErrors;
 import uapi.app.AppException;
-import uapi.app.internal.AppServiceLoader;
+import uapi.app.SystemBootstrap;
 import uapi.app.internal.SystemShuttingDownEvent;
-import uapi.app.internal.SystemStartingUpEvent;
 import uapi.app.terminal.internal.CliConfigProvider;
-import uapi.common.CollectionHelper;
 import uapi.event.IAttributedEventHandler;
 import uapi.event.IEventBus;
-import uapi.rx.Looper;
 import uapi.service.IRegistry;
 import uapi.service.IService;
-import uapi.service.ITagged;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -35,69 +30,24 @@ import java.util.concurrent.Semaphore;
  * The Bootstrap's responsibility is load basic services, parse command line arguments and
  * send out system startup event
  */
-public class Bootstrap {
+public class Bootstrap extends SystemBootstrap {
 
     private static final String[] basicSvcTags = new String[] {
             Tags.REGISTRY, Tags.CONFIG, Tags.LOG, Tags.EVENT, Tags.BEHAVIOR,
             Tags.PROFILE, Tags.APPLICATION
     };
 
-    private static AppServiceLoader appSvcLoader = new AppServiceLoader();
     private static final Semaphore semaphore = new Semaphore(0);
 
     public static void main(String[] args) {
-        long startTime = System.currentTimeMillis();
+        new Bootstrap(args).boot();
+    }
 
-        Iterable<IService> svcLoaders = appSvcLoader.loadServices();
-        final List<IRegistry> svcRegistries = new ArrayList<>();
-        final List<IService> basicSvcs = new ArrayList<>();
-        final List<IService> otherSvcs = new ArrayList<>();
-        Looper.on(svcLoaders)
-                .foreach(svc -> {
-                    if (svc instanceof IRegistry) {
-                        svcRegistries.add((IRegistry) svc);
-                    }
-                    if (svc instanceof ITagged) {
-                        ITagged taggedSvc = (ITagged) svc;
-                        String[] tags = taggedSvc.getTags();
-                        if (CollectionHelper.contains(tags, basicSvcTags) != null) {
-                            basicSvcs.add(svc);
-                        } else {
-                            otherSvcs.add(svc);
-                        }
-                    } else {
-                        otherSvcs.add(svc);
-                    }
-                });
+    private final String[] _args;
 
-        if (svcRegistries.size() == 0) {
-            throw AppException.builder()
-                    .errorCode(AppErrors.REGISTRY_IS_REQUIRED)
-                    .build();
-        }
-        if (svcRegistries.size() > 1) {
-            throw AppException.builder()
-                    .errorCode(AppErrors.MORE_REGISTRY)
-                    .variables(new AppErrors.MoreRegistry()
-                            .registries(svcRegistries))
-                    .build();
-        }
-
-        IRegistry svcRegistry = svcRegistries.get(0);
-        // Register basic service first
-        svcRegistry.register(basicSvcs.toArray(new IService[basicSvcs.size()]));
-        String svcRegType = svcRegistry.getClass().getCanonicalName();
-        svcRegistry = svcRegistry.findService(IRegistry.class);
-        if (svcRegistry == null) {
-            throw AppException.builder()
-                    .errorCode(AppErrors.REGISTRY_IS_UNSATISFIED)
-                    .variables(new AppErrors.RepositoryIsUnsatisfied()
-                            .serviceRegistryType(svcRegType))
-                    .build();
-        }
-
-        // Parse command line parameters
-        CliConfigProvider cliCfgProvider = svcRegistry.findService(CliConfigProvider.class);
+    @Override
+    protected void loadConfig(final IRegistry registry) {
+        CliConfigProvider cliCfgProvider = registry().findService(CliConfigProvider.class);
         if (cliCfgProvider == null) {
             throw AppException.builder()
                     .errorCode(AppErrors.SPECIFIC_SERVICE_NOT_FOUND)
@@ -105,17 +55,23 @@ public class Bootstrap {
                             .serviceType(CliConfigProvider.class.getCanonicalName()))
                     .build();
         }
-        cliCfgProvider.parse(args);
+        cliCfgProvider.parse(this._args);
+    }
 
-        // All base service must be activated
-        Looper.on(basicSvcTags).foreach(svcRegistry::activateTaggedService);
-
-        // Send system starting up event
-        SystemStartingUpEvent sysLaunchedEvent = new SystemStartingUpEvent(startTime, otherSvcs);
-        IEventBus eventBus = svcRegistry.findService(IEventBus.class);
+    @Override
+    protected void beforeSystemLaunching(
+            final IRegistry registry,
+            final List<IService> appServices
+    ) {
+        IEventBus eventBus = registry().findService(IEventBus.class);
         eventBus.register(new ExitSystemRequestHandler());
-        eventBus.fire(sysLaunchedEvent);
+    }
 
+    @Override
+    protected void afterSystemLaunching(
+            final IRegistry registry,
+            final List<IService> appServices
+    ) {
         Exception ex = null;
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook()));
@@ -125,8 +81,14 @@ public class Bootstrap {
         }
 
         // Send system shutting down event
-        SystemShuttingDownEvent shuttingDownEvent = new SystemShuttingDownEvent(otherSvcs, ex);
+        IEventBus eventBus = registry().findService(IEventBus.class);
+        SystemShuttingDownEvent shuttingDownEvent = new SystemShuttingDownEvent(appServices, ex);
         eventBus.fire(shuttingDownEvent, true);
+    }
+
+    // Private constructor
+    private Bootstrap(final String[] args) {
+        this._args = args;
     }
 
     private static final class ShutdownHook implements Runnable {
@@ -154,7 +116,4 @@ public class Bootstrap {
             return null;
         }
     }
-
-    // Private constructor
-    private Bootstrap() {}
 }
