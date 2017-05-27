@@ -7,3 +7,10 @@ profiles:
     matching: satisfy-any
     tags:
       - ServletApp
+
+web:
+  servlet:
+    url-mappings:
+      - /api/v1
+      - /api/v2
+  dispatch:

@@ -7,7 +7,7 @@ import uapi.behavior.BehaviorEvent;
  */
 public class HttpResponseEvent extends BehaviorEvent {
 
-    public static final String TOPIC    = "HttpRequestEvent";
+    public static final String TOPIC    = "HttpResponseEvent";
 
     private static final String KEY_REQ = "Request";
     private static final String KEY_RES = "Response";

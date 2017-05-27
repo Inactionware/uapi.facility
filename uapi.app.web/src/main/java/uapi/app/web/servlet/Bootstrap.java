@@ -1,16 +1,22 @@
 package uapi.app.web.servlet;
 
 import uapi.GeneralException;
+import uapi.app.AppStartupEvent;
 import uapi.app.SystemBootstrap;
 import uapi.app.internal.SystemShuttingDownEvent;
 import uapi.app.web.servlet.internal.ContextConfigProvider;
+import uapi.behavior.IResponsible;
+import uapi.behavior.IResponsibleRegistry;
 import uapi.event.IEventBus;
+import uapi.rx.Looper;
 import uapi.service.IRegistry;
 import uapi.service.IService;
+import uapi.web.servlet.GeneralServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRegistration;
 import java.util.List;
 
 /**
@@ -52,6 +58,19 @@ public class Bootstrap extends SystemBootstrap implements ServletContextListener
     ) {
         this._registry = registry;
         this._appServices = appServices;
+
+        IResponsibleRegistry respReg = this._registry.findService(IResponsibleRegistry.class);
+        IResponsible resp = respReg.register("ServletRegister");
+        resp.newBehavior("RegisterServlet", AppStartupEvent.class, AppStartupEvent.TOPIC)
+                .then((input, execCtx) -> {
+                    GeneralServlet servlet = this._registry.findService(GeneralServlet.class);
+                    ServletRegistration.Dynamic servletCfg =
+                            this._servletCtx.addServlet("GeneralServlet", servlet);
+                    Looper.on(servlet.mappedUrls()).foreach(servletCfg::addMapping);
+                    servletCfg.setAsyncSupported(true);
+                    return null;
+                })
+                .build();
     }
 
     @Override

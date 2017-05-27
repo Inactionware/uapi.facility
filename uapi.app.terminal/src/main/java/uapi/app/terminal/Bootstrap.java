@@ -32,11 +32,6 @@ import java.util.concurrent.Semaphore;
  */
 public class Bootstrap extends SystemBootstrap {
 
-    private static final String[] basicSvcTags = new String[] {
-            Tags.REGISTRY, Tags.CONFIG, Tags.LOG, Tags.EVENT, Tags.BEHAVIOR,
-            Tags.PROFILE, Tags.APPLICATION
-    };
-
     private static final Semaphore semaphore = new Semaphore(0);
 
     public static void main(String[] args) {
