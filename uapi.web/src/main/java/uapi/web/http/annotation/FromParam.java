@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Indicate the value should be extracted from query string of the HTTP request
  */
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.SOURCE)
-public @interface FromQuery {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FromParam {
 
     /**
      * The query string key name

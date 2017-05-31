@@ -6,11 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by min on 2017/5/29.
+ * Indicate which request uris will be mapped to this RequestData
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MappingUrls {
+public @interface MappingUris {
 
     String[] value();
 }

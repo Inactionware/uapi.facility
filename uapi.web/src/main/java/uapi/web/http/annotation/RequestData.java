@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by min on 2017/5/29.
+ * Indicate the class will hold specific request data
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

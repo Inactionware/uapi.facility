@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Indicate the value should be extracted from query string of the HTTP request header
  */
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface FromHeader {
 
     /**
