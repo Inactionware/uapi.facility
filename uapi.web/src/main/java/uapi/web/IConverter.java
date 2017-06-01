@@ -1,4 +1,4 @@
-package uapi.web.http;
+package uapi.web;
 
 /**
  * Created by xquan on 5/31/2017.

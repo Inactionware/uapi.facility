@@ -18,7 +18,9 @@ dependencies {
             "uapi:uapi.service:${uapi_cornerstone_version}",
             "uapi:uapi.config:${uapi_cornerstone_version}",
             "uapi:uapi.event:${uapi_cornerstone_version}",
-            "uapi:uapi.behavior:${uapi_cornerstone_version}"
+            "uapi:uapi.behavior:${uapi_cornerstone_version}",
+
+            "org.mindrot:jbcrypt:${jbcrypt_version}"
     )
     compile project(':uapi.web')
     compileOnly(

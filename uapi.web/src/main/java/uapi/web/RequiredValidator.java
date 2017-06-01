@@ -1,4 +1,6 @@
-package uapi.web.http;
+package uapi.web;
+
+import uapi.web.IValidator;
 
 /**
  * The validator checks the data field is provided or not
@@ -6,7 +8,7 @@ package uapi.web.http;
 public class RequiredValidator implements IValidator {
 
     @Override
-    public void validate() {
+    public void validate(final String value) {
 
     }
 }
