@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Indicate the value should be extracted from query string of the HTTP request
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FromParam {
 

@@ -22,6 +22,7 @@ public class BoolValidator implements IValidator {
 
     @Override
     public void validate(
+            final String name,
             final String value
     ) throws WebException {
         switch (this._type) {
@@ -30,7 +31,8 @@ public class BoolValidator implements IValidator {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_TRUE_FALSE)
                             .variables(new WebErrors.InvalidParamTrueFalse()
-                                .value(value))
+                                    .name(name)
+                                    .value(value))
                             .build();
                 }
                 break;
@@ -39,7 +41,8 @@ public class BoolValidator implements IValidator {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_ON_OFF)
                             .variables(new WebErrors.InvalidParamOnOff()
-                                .value(value))
+                                    .name(name)
+                                    .value(value))
                             .build();
                 }
                 break;
@@ -48,7 +51,8 @@ public class BoolValidator implements IValidator {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_YES_NO)
                             .variables(new WebErrors.InvalidParamYesNo()
-                                .value(value))
+                                    .name(name)
+                                    .value(value))
                             .build();
                 }
                 break;

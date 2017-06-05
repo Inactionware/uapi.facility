@@ -8,11 +8,13 @@ import java.lang.annotation.Target;
 /**
  * Created by xquan on 6/1/2017.
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Min {
 
     int intValue() default Integer.MIN_VALUE;
+
+    short shortValue() default Short.MIN_VALUE;
 
     long longValue() default Long.MIN_VALUE;
 

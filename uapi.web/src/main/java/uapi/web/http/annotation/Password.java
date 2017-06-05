@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by xquan on 6/1/2017.
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Password {
 }

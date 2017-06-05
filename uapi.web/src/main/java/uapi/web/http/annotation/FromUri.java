@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * user id from uri, you need tell the index of uri, the web service name index
  * is 0, so the user id is index 1.
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FromUri {
 

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * Indicate the data field need to verify by BooleanValidator
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Bool {
 

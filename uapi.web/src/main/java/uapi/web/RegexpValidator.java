@@ -5,8 +5,14 @@ package uapi.web;
  */
 public class RegexpValidator implements IValidator {
 
+    private final String _regexp;
+
+    public RegexpValidator(String regexp) {
+        this._regexp = regexp;
+    }
+
     @Override
-    public void validate(final String value) {
+    public void validate(String name, String value) throws WebException {
 
     }
 }

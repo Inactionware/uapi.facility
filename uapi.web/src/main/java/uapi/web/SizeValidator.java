@@ -5,8 +5,17 @@ package uapi.web;
  */
 public class SizeValidator implements IValidator {
 
+    private final int _min;
+
+    private final int _max;
+
+    public SizeValidator(int min, int max) {
+        this._min = min;
+        this._max = max;
+    }
+
     @Override
-    public void validate(final String value) {
+    public void validate(String name, String value) throws WebException {
 
     }
 }
