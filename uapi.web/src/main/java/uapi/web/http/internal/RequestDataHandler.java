@@ -24,7 +24,10 @@ import java.util.*;
 @AutoService(IAnnotationsHandler.class)
 public class RequestDataHandler extends AnnotationsHandler {
 
-    private static final String TEMP_SET_FIELD  = "template/setField_method.ftl";
+    private static final String TEMP_SET_FIELD      = "template/setField_method.ftl";
+    private static final String TEMP_MAPPING_URIS   = "template/mappingUrls_method.ftl";
+    private static final String TEMP_FIELD_INFOS    = "template/fieldInfos_method.ftl";
+    private static final String TEMP_NEW_INSTANCE   = "template/newInstance_method.ftl";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -110,9 +113,10 @@ public class RequestDataHandler extends AnnotationsHandler {
             // Make data class builder
             Template setFieldTemp = builderContext.loadTemplate(TEMP_SET_FIELD);
 
-            ClassMeta.Builder clsBuilder = builderContext.findClassBuilder(classElement);
-            String reqDataType = clsBuilder.getGeneratedClassName();
-            clsBuilder.addImplement(IRequestData.class.getCanonicalName())
+            ClassMeta.Builder dataClsBuilder = builderContext.findClassBuilder(classElement);
+            String reqDataType = dataClsBuilder.getGeneratedClassName();
+            model.put("dataType", reqDataType);
+            dataClsBuilder.addImplement(IRequestData.class.getCanonicalName())
                     .addMethodBuilder(MethodMeta.builder()
                             .addAnnotationBuilder(AnnotationMeta.builder()
                                     .setName(AnnotationMeta.OVERRIDE))
@@ -129,7 +133,43 @@ public class RequestDataHandler extends AnnotationsHandler {
                                     .setTemplate(setFieldTemp)));
 
 
-            // Todo: make data meta class builder
+            // Make data meta class builder
+            Template mappingUrlsTemp = builderContext.loadTemplate(TEMP_MAPPING_URIS);
+            Template fieldInfosTemp = builderContext.loadTemplate(TEMP_FIELD_INFOS);
+            Template newInstanceTemp = builderContext.loadTemplate(TEMP_NEW_INSTANCE);
+
+            ClassMeta.Builder metaClassBuilder = builderContext.newClassBuilder(
+                    dataClsBuilder.getPackageName(), dataClsBuilder.getClassName() + "Meta");
+            metaClassBuilder.addImplement(IRequestDataMeta.class.getCanonicalName())
+                    .addAnnotationBuilder(AnnotationMeta.builder()
+                            .setName("Service")
+                            .addArgument(ArgumentMeta.builder()
+                                    .setName("value")
+                                    .setValue(IRequestDataMeta.class.getCanonicalName() + ".class")))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder()
+                                    .setName(AnnotationMeta.OVERRIDE))
+                            .setName("mappingUrls")
+                            .setReturnTypeName(Type.STRING_ARRAY)
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setModel(model)
+                                    .setTemplate(mappingUrlsTemp)))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder()
+                                    .setName(AnnotationMeta.OVERRIDE))
+                            .setName("fieldInfos")
+                            .setReturnTypeName("FieldInfo[]")
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setModel(model)
+                                    .setTemplate(fieldInfosTemp)))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder()
+                                    .setName(AnnotationMeta.OVERRIDE))
+                            .setName("newInstance")
+                            .setReturnTypeName(reqDataType)
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setModel(model)
+                                    .setTemplate(newInstanceTemp)));
         });
     }
 
