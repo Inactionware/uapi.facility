@@ -7,6 +7,6 @@ public class PasswordConverter implements IConverter<String, String> {
 
     @Override
     public String convert(String input) {
-        return null;
+        return input;
     }
 }

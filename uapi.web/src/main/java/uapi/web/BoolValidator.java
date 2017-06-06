@@ -7,12 +7,12 @@ import uapi.GeneralException;
  */
 public class BoolValidator implements IValidator {
 
-    private static final String B_TRUE  = "true";
-    private static final String B_FALSE = "false";
-    private static final String B_YES   = "yes";
-    private static final String B_NO    = "no";
-    private static final String B_ON    = "on";
-    private static final String B_OFF   = "off";
+    public static final String B_TRUE  = "true";
+    public static final String B_FALSE = "false";
+    public static final String B_YES   = "yes";
+    public static final String B_NO    = "no";
+    public static final String B_ON    = "on";
+    public static final String B_OFF   = "off";
 
     private final BoolType _type;
 

@@ -1,14 +1,14 @@
 package uapi.web.http.internal;
 
 import com.google.auto.service.AutoService;
+import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
-import uapi.codegen.AnnotationsHandler;
-import uapi.codegen.IAnnotationsHandler;
-import uapi.codegen.IBuilderContext;
+import uapi.codegen.*;
 import uapi.rx.Looper;
 import uapi.web.BoolType;
 import uapi.web.NumberValidator;
+import uapi.web.http.IRequestData;
 import uapi.web.http.IRequestDataMeta;
 import uapi.web.http.annotation.*;
 
@@ -23,6 +23,8 @@ import java.util.*;
  */
 @AutoService(IAnnotationsHandler.class)
 public class RequestDataHandler extends AnnotationsHandler {
+
+    private static final String TEMP_SET_FIELD  = "template/setField_method.ftl";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -64,7 +66,7 @@ public class RequestDataHandler extends AnnotationsHandler {
                     .filter(element -> {
                         FieldMeta fieldMeta = new FieldMeta();
                         fieldMeta.name = element.getSimpleName().toString();
-                        String fieldTypeName = element.asType().toString();
+                        fieldMeta.type = element.asType().toString();
                         if (element.getAnnotation(FromHeader.class) != null) {
                             fieldMetas.add(fieldMeta);
                             handleFromHeader(element, fieldMetas);
@@ -105,7 +107,27 @@ public class RequestDataHandler extends AnnotationsHandler {
                         }
                     });
 
-            // Todo: make data class builder
+            // Make data class builder
+            Template setFieldTemp = builderContext.loadTemplate(TEMP_SET_FIELD);
+
+            ClassMeta.Builder clsBuilder = builderContext.findClassBuilder(classElement);
+            String reqDataType = clsBuilder.getGeneratedClassName();
+            clsBuilder.addImplement(IRequestData.class.getCanonicalName())
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder()
+                                    .setName(AnnotationMeta.OVERRIDE))
+                            .setName("setField")
+                            .setReturnTypeName(Type.VOID)
+                            .addParameterBuilder(ParameterMeta.builder()
+                                    .setName("value")
+                                    .setType(Type.Q_OBJECT))
+                            .addParameterBuilder(ParameterMeta.builder()
+                                    .setName("field")
+                                    .setType(Type.Q_STRING))
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setModel(model)
+                                    .setTemplate(setFieldTemp)));
+
 
             // Todo: make data meta class builder
         });
@@ -272,7 +294,7 @@ public class RequestDataHandler extends AnnotationsHandler {
 
         public IRequestDataMeta.DataFrom from;
 
-        public Class<?> type;
+        public String type;
 
         public List<IValidatorMeta> validators = new ArrayList<>();
 

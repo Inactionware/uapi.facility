@@ -1,7 +1,9 @@
 package uapi.web;
 
+import uapi.GeneralException;
+
 /**
- * Created by xquan on 6/5/2017.
+ * Convert boolean string to boolean type
  */
 public class BoolConverter implements IConverter<String, Boolean> {
 
@@ -13,6 +15,21 @@ public class BoolConverter implements IConverter<String, Boolean> {
 
     @Override
     public Boolean convert(String input) {
-        return null;
+        Boolean result;
+        switch (this._type) {
+            case TrueFalse:
+                result = BoolValidator.B_TRUE.equalsIgnoreCase(input);
+                break;
+            case OnOff:
+                result = BoolValidator.B_ON.equalsIgnoreCase(input);
+                break;
+            case YesNo:
+                result = BoolValidator.B_YES.equalsIgnoreCase(input);
+                break;
+            default:
+                // The case should not happen
+                throw new GeneralException("Unsupported bool type - {}", this._type);
+        }
+        return result;
     }
 }

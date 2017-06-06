@@ -16,6 +16,21 @@ public class SizeValidator implements IValidator {
 
     @Override
     public void validate(String name, String value) throws WebException {
-
+        int size;
+        if (value == null) {
+            size = 0;
+        } else {
+            size = value.length();
+        }
+        if (size < this._min || size > this._max) {
+            throw WebException.builder()
+                    .errorCode(WebErrors.SIZE_OVER_LIMITATION)
+                    .variables(new WebErrors.SizeOverLimitation()
+                            .name(name)
+                            .value(value)
+                            .min(this._min)
+                            .max(this._max))
+                    .build();
+        }
     }
 }
