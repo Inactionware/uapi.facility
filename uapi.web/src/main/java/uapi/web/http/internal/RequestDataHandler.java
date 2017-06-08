@@ -14,6 +14,7 @@ import uapi.web.http.annotation.*;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
@@ -120,6 +121,7 @@ public class RequestDataHandler extends AnnotationsHandler {
                     .addMethodBuilder(MethodMeta.builder()
                             .addAnnotationBuilder(AnnotationMeta.builder()
                                     .setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
                             .setName("setField")
                             .setReturnTypeName(Type.VOID)
                             .addParameterBuilder(ParameterMeta.builder()
@@ -134,42 +136,45 @@ public class RequestDataHandler extends AnnotationsHandler {
 
 
             // Make data meta class builder
-            Template mappingUrlsTemp = builderContext.loadTemplate(TEMP_MAPPING_URIS);
-            Template fieldInfosTemp = builderContext.loadTemplate(TEMP_FIELD_INFOS);
-            Template newInstanceTemp = builderContext.loadTemplate(TEMP_NEW_INSTANCE);
-
-            ClassMeta.Builder metaClassBuilder = builderContext.newClassBuilder(
-                    dataClsBuilder.getPackageName(), dataClsBuilder.getClassName() + "Meta");
-            metaClassBuilder.addImplement(IRequestDataMeta.class.getCanonicalName())
-                    .addAnnotationBuilder(AnnotationMeta.builder()
-                            .setName("Service")
-                            .addArgument(ArgumentMeta.builder()
-                                    .setName("value")
-                                    .setValue(IRequestDataMeta.class.getCanonicalName() + ".class")))
-                    .addMethodBuilder(MethodMeta.builder()
-                            .addAnnotationBuilder(AnnotationMeta.builder()
-                                    .setName(AnnotationMeta.OVERRIDE))
-                            .setName("mappingUrls")
-                            .setReturnTypeName(Type.STRING_ARRAY)
-                            .addCodeBuilder(CodeMeta.builder()
-                                    .setModel(model)
-                                    .setTemplate(mappingUrlsTemp)))
-                    .addMethodBuilder(MethodMeta.builder()
-                            .addAnnotationBuilder(AnnotationMeta.builder()
-                                    .setName(AnnotationMeta.OVERRIDE))
-                            .setName("fieldInfos")
-                            .setReturnTypeName("FieldInfo[]")
-                            .addCodeBuilder(CodeMeta.builder()
-                                    .setModel(model)
-                                    .setTemplate(fieldInfosTemp)))
-                    .addMethodBuilder(MethodMeta.builder()
-                            .addAnnotationBuilder(AnnotationMeta.builder()
-                                    .setName(AnnotationMeta.OVERRIDE))
-                            .setName("newInstance")
-                            .setReturnTypeName(reqDataType)
-                            .addCodeBuilder(CodeMeta.builder()
-                                    .setModel(model)
-                                    .setTemplate(newInstanceTemp)));
+//            Template mappingUrlsTemp = builderContext.loadTemplate(TEMP_MAPPING_URIS);
+//            Template fieldInfosTemp = builderContext.loadTemplate(TEMP_FIELD_INFOS);
+//            Template newInstanceTemp = builderContext.loadTemplate(TEMP_NEW_INSTANCE);
+//
+//            ClassMeta.Builder metaClassBuilder = builderContext.newClassBuilder(
+//                    dataClsBuilder.getPackageName(), dataClsBuilder.getClassName() + "Meta");
+//            metaClassBuilder.addImplement(IRequestDataMeta.class.getCanonicalName())
+//                    .addAnnotationBuilder(AnnotationMeta.builder()
+//                            .setName("Service")
+//                            .addArgument(ArgumentMeta.builder()
+//                                    .setName("value")
+//                                    .setValue(IRequestDataMeta.class.getCanonicalName() + ".class")))
+//                    .addMethodBuilder(MethodMeta.builder()
+//                            .addAnnotationBuilder(AnnotationMeta.builder()
+//                                    .setName(AnnotationMeta.OVERRIDE))
+//                            .setName("mappingUrls")
+//                            .addModifier(Modifier.PUBLIC)
+//                            .setReturnTypeName(Type.STRING_ARRAY)
+//                            .addCodeBuilder(CodeMeta.builder()
+//                                    .setModel(model)
+//                                    .setTemplate(mappingUrlsTemp)))
+//                    .addMethodBuilder(MethodMeta.builder()
+//                            .addAnnotationBuilder(AnnotationMeta.builder()
+//                                    .setName(AnnotationMeta.OVERRIDE))
+//                            .setName("fieldInfos")
+//                            .addModifier(Modifier.PUBLIC)
+//                            .setReturnTypeName("FieldInfo[]")
+//                            .addCodeBuilder(CodeMeta.builder()
+//                                    .setModel(model)
+//                                    .setTemplate(fieldInfosTemp)))
+//                    .addMethodBuilder(MethodMeta.builder()
+//                            .addAnnotationBuilder(AnnotationMeta.builder()
+//                                    .setName(AnnotationMeta.OVERRIDE))
+//                            .setName("newInstance")
+//                            .addModifier(Modifier.PUBLIC)
+//                            .setReturnTypeName(reqDataType)
+//                            .addCodeBuilder(CodeMeta.builder()
+//                                    .setModel(model)
+//                                    .setTemplate(newInstanceTemp)));
         });
     }
 
@@ -339,6 +344,26 @@ public class RequestDataHandler extends AnnotationsHandler {
         public List<IValidatorMeta> validators = new ArrayList<>();
 
         public IConverterMeta converter;
+
+        public String getName() {
+            return this.name;
+        }
+
+        public IRequestDataMeta.DataFrom getFrom() {
+            return this.from;
+        }
+
+        public String getType() {
+            return this.type;
+        }
+
+        public List<IValidatorMeta> getValidators() {
+            return this.validators;
+        }
+
+        public IConverterMeta getConverter() {
+            return this.converter;
+        }
     }
 
     public interface IValidatorMeta { }
@@ -350,6 +375,14 @@ public class RequestDataHandler extends AnnotationsHandler {
         public int min;
 
         public int max;
+
+        public int getMin() {
+            return this.min;
+        }
+
+        public int getMax() {
+            return this.max;
+        }
     }
 
     public static class MinMeta implements IValidatorMeta {
@@ -360,26 +393,50 @@ public class RequestDataHandler extends AnnotationsHandler {
         public long longValue;
         public float floatValue;
         public double doubleValue;
+
+        public NumberValidator.NumberType getNumberType() {
+            return this.numberType;
+        }
+
+        public int getIntValue() {
+            return this.intValue;
+        }
+
+        public short getShortValue() {
+            return this.shortValue;
+        }
+
+        public long getLongValue() {
+            return this.longValue;
+        }
+
+        public float getFloatValue() {
+            return this.floatValue;
+        }
+
+        public double getDoubleValue() {
+            return this.doubleValue;
+        }
     }
 
-    public static class MaxMeta implements IValidatorMeta {
-
-        public NumberValidator.NumberType numberType;
-        public int intValue;
-        public short shortValue;
-        public long longValue;
-        public float floatValue;
-        public double doubleValue;
-    }
+    public static class MaxMeta extends MinMeta { }
 
     public static class BoolMeta implements IValidatorMeta {
 
         public BoolType type;
+
+        public BoolType getType() {
+            return this.type;
+        }
     }
 
     public static class RegexpMeta implements IValidatorMeta {
 
         public String regexp;
+
+        public String getRegexp() {
+            return this.regexp;
+        }
     }
 
     public interface IConverterMeta { }
@@ -389,5 +446,9 @@ public class RequestDataHandler extends AnnotationsHandler {
     public static class BoolConverterMeta implements IConverterMeta {
 
         public BoolType type;
+
+        public BoolType getType() {
+            return this.type;
+        }
     }
 }

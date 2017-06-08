@@ -2,20 +2,20 @@ return new uapi.web.http.IRequestDataMeta.FieldInfo[] {
 <#list fieldMetas as fieldMeta>
             uapi.web.http.IRequestDataMeta.FieldInfo(
                 ${fieldMeta.name},
-    <#if fieldMeta.from instanceOf uapi.web.http.IRequestDataMeta.DataFromHeader>
+    <#if fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromHeader">
                 new uapi.web.http.IRequestDataMeta.DataFromHeader("${fieldMeta.from.name}"),
-    <#elseif fieldMeta.from instanceOf uapi.web.http.IRequestDataMeta.DataFromParam>
+    <#elseif fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromParam">
                 new uapi.web.http.IRequestDataMeta.DataFromParam("${fieldMeta.from.name}"),
-    <#elseif fieldMeta.from instanceOf uapi.web.http.IRequestDataMeta.DataFromUri>
+    <#elseif fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromUri">
                 new uapi.web.http.IRequestDataMeta.DataFromUri("${fieldMeta.from.index}"),
     </#if>
                 new uapi.web.IValidator[] {
     <#list fieldMeta.validators as validator>
-        <#if validator instanceOf uapi.web.http.internal.RequestDataHandler.RequiredMeta>
+        <#if validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.RequiredMeta">
                     new uapi.web.RequiredValidator()
-        <#elseif validator instanceOf uapi.web.http.internal.RequestDataHandler.SizeMeta>
+        <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.SizeMeta">
                     new uapi.web.SizeValidator(${validator.min}, ${validator.max})
-        <#elseif validator instanceOf uapi.web.http.internal.RequestDataHandler.MinMeta>
+        <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.MinMeta">
             <#if validator.numberType == uapi.web.NumberValidator.NumberType.SHORT>
                     new uapi.web.MinValidator((short) ${validator.shortValue})
             <#elseif validator.numberType == uapi.web.NumberValidator.NumberType.INT>
@@ -27,7 +27,7 @@ return new uapi.web.http.IRequestDataMeta.FieldInfo[] {
             <#elseif validator.numberType == uapi.web.NumberValidator.NumberType.DOUBLE>
                     new uapi.web.MinValidator((double) ${validator.doubleValue})
             </#if>
-         <#elseif validator instanceOf uapi.web.http.internal.RequestDataHandler.MaxMeta>
+         <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.MaxMeta">
             <#if validator.numberType == uapi.web.NumberValidator.NumberType.SHORT>
                     new uapi.web.MaxValidator((short) ${validator.shortValue})
             <#elseif validator.numberType == uapi.web.NumberValidator.NumberType.INT>
@@ -39,18 +39,20 @@ return new uapi.web.http.IRequestDataMeta.FieldInfo[] {
             <#elseif validator.numberType == uapi.web.NumberValidator.NumberType.DOUBLE>
                     new uapi.web.MaxValidator((double) ${validator.doubleValue})
             </#if>
-         <#elseif validator instanceOf uapi.web.http.internal.RequestDataHandler.BoolMeta>
+         <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.BoolMeta">
                     new uapi.web.BoolValidator(${validator.type})
-         <#elseif validator instanceOf uapi.web.http.internal.RequestDataHandler.RegexpMeta>
+         <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.RegexpMeta">
                     new uapi.web.RegexpValidator(${validator.regexp})
         </#if>
         <#sep>, </#sep>
     </#list>
                 },
-    <#if fieldMeta.converter instanceOf uapi.web.http.internal.RequestDataHandler.PasswordConverterMeta>
+    <#if fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.PasswordConverterMeta">
                 new uapi.web.PasswordConverter()
-    <#if fieldMeta.converter instanceOf uapi.web.http.internal.RequestDataHandler.BoolConverterMeta>
+    <#elseif fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.BoolConverterMeta">
                 new uapi.web.BoolConverter(${fieldMeta.converter.type})
+    <#else>
+                null
     </#if>
             )<#sep>, </#sep>
 </#list>

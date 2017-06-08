@@ -67,7 +67,7 @@ public interface IRequestDataMeta {
             this._name = name;
         }
 
-        public String name() {
+        public String getName() {
             return this._name;
         }
 
@@ -85,7 +85,7 @@ public interface IRequestDataMeta {
             this._name = name;
         }
 
-        public String name() {
+        public String getName() {
             return this._name;
         }
 
@@ -103,7 +103,7 @@ public interface IRequestDataMeta {
             this._index = index;
         }
 
-        public int index() {
+        public int getIndex() {
             return this._index;
         }
 

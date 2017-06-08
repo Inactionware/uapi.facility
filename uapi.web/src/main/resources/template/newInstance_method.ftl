@@ -1,1 +1,1 @@
-return new ${dataType)();
+return new ${dataType}();

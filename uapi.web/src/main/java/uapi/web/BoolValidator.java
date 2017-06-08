@@ -7,13 +7,6 @@ import uapi.GeneralException;
  */
 public class BoolValidator implements IValidator {
 
-    public static final String B_TRUE  = "true";
-    public static final String B_FALSE = "false";
-    public static final String B_YES   = "yes";
-    public static final String B_NO    = "no";
-    public static final String B_ON    = "on";
-    public static final String B_OFF   = "off";
-
     private final BoolType _type;
 
     public BoolValidator(final BoolType type) {
@@ -27,7 +20,7 @@ public class BoolValidator implements IValidator {
     ) throws WebException {
         switch (this._type) {
             case TrueFalse:
-                if (! B_TRUE.equalsIgnoreCase(value) && ! B_FALSE.equalsIgnoreCase(value)) {
+                if (! BoolType.TRUE.equalsIgnoreCase(value) && ! BoolType.FALSE.equalsIgnoreCase(value)) {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_TRUE_FALSE)
                             .variables(new WebErrors.InvalidParamTrueFalse()
@@ -37,7 +30,7 @@ public class BoolValidator implements IValidator {
                 }
                 break;
             case OnOff:
-                if (! B_ON.equalsIgnoreCase(value) && ! B_OFF.equalsIgnoreCase(value)) {
+                if (! BoolType.ON.equalsIgnoreCase(value) && ! BoolType.OFF.equalsIgnoreCase(value)) {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_ON_OFF)
                             .variables(new WebErrors.InvalidParamOnOff()
@@ -47,7 +40,7 @@ public class BoolValidator implements IValidator {
                 }
                 break;
             case YesNo:
-                if (! B_YES.equalsIgnoreCase(value) && ! B_NO.equalsIgnoreCase(value)) {
+                if (! BoolType.YES.equalsIgnoreCase(value) && ! BoolType.NO.equalsIgnoreCase(value)) {
                     throw WebException.builder()
                             .errorCode(WebErrors.INVALID_PARAM_YES_NO)
                             .variables(new WebErrors.InvalidParamYesNo()
