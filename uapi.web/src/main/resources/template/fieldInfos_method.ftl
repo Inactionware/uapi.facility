@@ -1,13 +1,13 @@
 return new uapi.web.http.IRequestDataMeta.FieldInfo[] {
 <#list fieldMetas as fieldMeta>
-            uapi.web.http.IRequestDataMeta.FieldInfo(
-                ${fieldMeta.name},
+            new uapi.web.http.IRequestDataMeta.FieldInfo(
+                "${fieldMeta.name}",
     <#if fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromHeader">
                 new uapi.web.http.IRequestDataMeta.DataFromHeader("${fieldMeta.from.name}"),
     <#elseif fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromParam">
                 new uapi.web.http.IRequestDataMeta.DataFromParam("${fieldMeta.from.name}"),
     <#elseif fieldMeta.from.class.canonicalName == "uapi.web.http.IRequestDataMeta.DataFromUri">
-                new uapi.web.http.IRequestDataMeta.DataFromUri("${fieldMeta.from.index}"),
+                new uapi.web.http.IRequestDataMeta.DataFromUri(${fieldMeta.from.index}),
     </#if>
                 new uapi.web.IValidator[] {
     <#list fieldMeta.validators as validator>
@@ -44,13 +44,17 @@ return new uapi.web.http.IRequestDataMeta.FieldInfo[] {
          <#elseif validator.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.RegexpMeta">
                     new uapi.web.RegexpValidator(${validator.regexp})
         </#if>
-        <#sep>, </#sep>
+              <#sep>, </#sep>
     </#list>
                 },
-    <#if fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.PasswordConverterMeta">
+    <#if fieldMeta.converter??>
+        <#if fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.PasswordConverterMeta">
                 new uapi.web.PasswordConverter()
-    <#elseif fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.BoolConverterMeta">
+        <#elseif fieldMeta.converter.class.canonicalName == "uapi.web.http.internal.RequestDataHandler.BoolConverterMeta">
                 new uapi.web.BoolConverter(${fieldMeta.converter.type})
+        <#else>
+                null
+        </#if>
     <#else>
                 null
     </#if>
