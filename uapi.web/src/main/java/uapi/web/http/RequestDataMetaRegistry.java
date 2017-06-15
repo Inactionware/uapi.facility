@@ -61,6 +61,12 @@ public class RequestDataMetaRegistry {
         return matchedMeta;
     }
 
+    public List<String> getMappedUrls() {
+        return Looper.on(this._reqDataMetas)
+                .flatmap(dataMeta -> Looper.on(dataMeta.mappingUrls()))
+                .toList();
+    }
+
     private final class UriDataMetaMapping {
 
         private final String _uri;

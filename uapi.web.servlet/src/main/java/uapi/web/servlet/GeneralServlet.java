@@ -10,6 +10,7 @@ import uapi.service.annotation.Service;
 import uapi.service.annotation.Tag;
 import uapi.web.http.HttpRequestEvent;
 import uapi.web.http.HttpResponseEvent;
+import uapi.web.http.RequestDataMetaRegistry;
 import uapi.web.servlet.internal.ServletRequest;
 import uapi.web.servlet.internal.ServletResponse;
 
@@ -36,9 +37,6 @@ public class GeneralServlet extends HttpServlet {
         return null;
     };
 
-    @Config(path="web.servlet.url-mappings")
-    protected List<String> _mappedUrls;
-
     @Inject
     protected ILogger _logger;
 
@@ -48,12 +46,19 @@ public class GeneralServlet extends HttpServlet {
     @Inject
     protected IResponsibleRegistry _responsibleReg;
 
+    @Inject
+    protected RequestDataMetaRegistry _reqDataMetaReg;
+
+    private List<String> _mappedUrls;
+
     public List<String> mappedUrls() {
         return this._mappedUrls;
     }
 
     @OnActivate
     public void activate() {
+        this._mappedUrls = this._reqDataMetaReg.getMappedUrls();
+
         IResponsible responsible = this._responsibleReg.register(RESPONSIBLE_NAME);
         responsible.newBehavior(BEHAVIOR_RESPONSE, HttpResponseEvent.class, HttpResponseEvent.TOPIC)
                 .then((input, execCtx) -> {

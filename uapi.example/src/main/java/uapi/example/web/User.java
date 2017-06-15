@@ -12,5 +12,5 @@ public class User {
     @FromUri(1)
     @Required
     @Size(min=3, max=6)
-    protected String _name;
+    public String name;
 }

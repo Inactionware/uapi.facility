@@ -18,6 +18,8 @@ apply plugin: 'org.akhikhl.gretty'
 
 dependencies {
     compile project(':uapi.app.web')
+    compile project(':uapi.web')
+    compile project(':uapi.web.servlet')
     compile (
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",

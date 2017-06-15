@@ -8,9 +8,9 @@ profiles:
     tags:
       - ServletApp
 
-web:
-  servlet:
-    url-mappings:
-      - /api/v1
-      - /api/v2
-  dispatch:
+#web:
+#  servlet:
+#    url-mappings:
+#      - /api/v1
+#      - /api/v2
+#  dispatch:
