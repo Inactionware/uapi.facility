@@ -6,6 +6,7 @@ profiles:
     model: include
     matching: satisfy-any
     tags:
+      - Web
       - ServletApp
 
 #web:

@@ -3,6 +3,7 @@ package uapi.example.web;
 import uapi.behavior.ActionIdentify;
 import uapi.behavior.IResponsible;
 import uapi.behavior.IResponsibleRegistry;
+import uapi.service.IRegistry;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.OnActivate;
 import uapi.service.annotation.Service;
@@ -23,16 +24,18 @@ public class HelloUser {
     @Inject
     protected IResponsibleRegistry _respReg;
 
+    @Inject
+    IRegistry _reg;
+
     @OnActivate
     public void activate() {
         IResponsible resp = this._respReg.register(RESP_NAME);
         resp.newBehavior("Say Hello User", HttpRequestEvent.class, HttpRequestEvent.TOPIC)
                 .then(ActionIdentify.toActionId(ExtractRequest.class))
-                .then((input, execCtx) -> {
+                .call((input, execCtx) -> {
                     User user = (User) input;
                     HttpRequestEvent event = execCtx.originalEvent();
                     event.response().output("Hello Web event by user " + user.name + "!");
-                    return null;
                 })
                 .onSuccess((input, execCtx) -> {
                     HttpRequestEvent event = execCtx.originalEvent();

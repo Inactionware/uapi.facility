@@ -6,12 +6,14 @@ import uapi.behavior.annotation.ActionDo;
 import uapi.rx.Looper;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.Service;
+import uapi.service.annotation.Tag;
 
 /**
  * Action is used to extract request data from http request
  */
 @Service
 @Action
+@Tag("Web")
 public class ExtractRequest {
 
     @Inject

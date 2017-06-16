@@ -5,6 +5,7 @@ import uapi.rx.Looper;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.Optional;
 import uapi.service.annotation.Service;
+import uapi.service.annotation.Tag;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Registry for request data meta
  */
 @Service
+@Tag("Web")
 public class RequestDataMetaRegistry {
 
     @Inject
