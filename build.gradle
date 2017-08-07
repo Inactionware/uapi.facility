@@ -99,18 +99,6 @@ subprojects {
     }
 
     build.dependsOn jacocoTestReport
-
-    publishing {
-        publications {
-            mavenPublication(MavenPublication) {
-                from components.java
-                artifact sourcesJar
-                groupId "${project_group}"
-                artifactId "${project.name}"
-                version "${project_version}"
-            }
-        }
-    }
 }
 
 task wrapper(type: Wrapper) {
