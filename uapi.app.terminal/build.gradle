@@ -23,18 +23,6 @@ dependencies {
     )
 }
 
-publishing {
-    publications {
-        mavenPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            groupId "${project_group}"
-            artifactId "${project.name}"
-            version "${project_version}"
-        }
-    }
-}
-
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
