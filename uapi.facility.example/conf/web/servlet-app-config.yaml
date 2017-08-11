@@ -1,0 +1,17 @@
+app:
+  active-profile: ServletAppProfile
+
+profiles:
+  - name: ServletAppProfile
+    model: include
+    matching: satisfy-any
+    tags:
+      - Web
+      - ServletApp
+
+#web:
+#  servlet:
+#    url-mappings:
+#      - /api/v1
+#      - /api/v2
+#  dispatch:
