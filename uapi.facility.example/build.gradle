@@ -19,6 +19,7 @@ apply plugin: 'org.akhikhl.gretty'
 dependencies {
     compileOnly (
             project(':uapi.web.apt'),
+            files('../uapi.web.apt/src/main/resources'),
 
             "uapi:uapi.behavior.apt:${uapi_cornerstone_version}",
 
