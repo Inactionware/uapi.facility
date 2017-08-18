@@ -8,7 +8,7 @@
 
     <context-param>
         <param-name>config</param-name>
-        <param-value>conf/web/servlet-app-config.yaml</param-value>
+        <param-value>{APP_DIR}/conf/servlet-app-config.yaml</param-value>
     </context-param>
     <listener>
         <listener-class>uapi.app.web.servlet.Bootstrap</listener-class>

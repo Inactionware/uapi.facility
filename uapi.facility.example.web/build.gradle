@@ -46,6 +46,12 @@ dependencies {
     )
 }
 
+war {
+    from('conf') {
+        into('conf')
+    }
+}
+
 gretty {
     httpPort = 8080
     servletContainer = 'tomcat7'

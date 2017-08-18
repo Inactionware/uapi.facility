@@ -1,7 +1,6 @@
 package uapi.web.servlet;
 
 import uapi.behavior.*;
-import uapi.config.annotation.Config;
 import uapi.event.IEventBus;
 import uapi.log.ILogger;
 import uapi.service.annotation.Inject;
