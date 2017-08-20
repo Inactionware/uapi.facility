@@ -9,12 +9,14 @@
 
 buildscript {
     dependencies {
-        classpath 'org.akhikhl.gretty:gretty:+'
+//        classpath 'org.akhikhl.gretty:gretty:+'
+//        classpath 'com.bmuschko:gradle-tomcat-plugin:2.3'
     }
 }
 
 apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
+//apply plugin: 'org.akhikhl.gretty'
+//apply plugin: 'com.bmuschko.tomcat'
 
 dependencies {
     compileOnly (
@@ -44,6 +46,11 @@ dependencies {
     runtime (
             "javax.servlet:javax.servlet-api:${javax_servlet_version}"
     )
+
+//    def tomcatVersion = '7.0.76'
+//    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+//            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+//            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 
 war {
@@ -52,8 +59,15 @@ war {
     }
 }
 
-gretty {
-    httpPort = 8080
-    servletContainer = 'tomcat7'
-    contextPath = '/'
-}
+//gretty {
+//    httpPort = 8080
+//    servletContainer = 'tomcat7'
+//    contextPath = '/'
+//}
+
+//tomcat {
+//    httpPort = 8090
+//    httpsPort = 8091
+//    enableSSL = false
+//    contextPath = '/'
+//}
