@@ -8,10 +8,10 @@ public interface INetListener {
     /**
      * Start up the net listener
      */
-    void startUp();
+    void startUp() throws Exception;
 
     /**
      * Shut down the net listener
      */
-    void shutDown();
+    void shutDown() throws Exception;
 }
