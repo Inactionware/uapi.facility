@@ -14,14 +14,13 @@ import io.netty.handler.logging.LoggingHandler;
 import uapi.net.INetChannelHandler;
 import uapi.net.INetListener;
 import uapi.net.annotation.Attribute;
-import uapi.net.annotation.HandlerField;
 import uapi.net.annotation.NetListener;
 import uapi.net.telnet.TelnetAttribute;
 
 import java.net.InetAddress;
 import java.util.Date;
 
-@NetListener
+@NetListener(type = TelnetAttribute.TYPE)
 public class TelnetListener implements INetListener {
 
     private static final String DEFAULT_HOST    = "localhost";
@@ -36,7 +35,7 @@ public class TelnetListener implements INetListener {
     @Attribute(name = TelnetAttribute.PORT, isRequired = false)
     protected int _port = DEFAULT_PORT;
 
-    @HandlerField
+    @Attribute(name = TelnetAttribute.HANDLER, isRequired = true)
     protected INetChannelHandler _handler;
 
     @Override

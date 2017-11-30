@@ -1,7 +1,10 @@
 package uapi.net.telnet;
 
-public class TelnetAttribute {
+import uapi.net.NetListenerAttribute;
 
-    public static final String HOST     = "Host";
-    public static final String PORT     = "Port";
+public class TelnetAttribute extends NetListenerAttribute {
+
+    public static final String TYPE     = "Telnet";
+
+    private TelnetAttribute() { }
 }

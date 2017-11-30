@@ -1,6 +1,12 @@
 package uapi.net;
 
-public interface INetListenerMeta {
+import uapi.IIdentifiable;
+
+public interface INetListenerMeta extends IIdentifiable<String> {
+
+    default String getId() {
+        return type();
+    }
 
     String type();
 

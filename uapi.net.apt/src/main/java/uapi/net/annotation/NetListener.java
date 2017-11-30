@@ -10,4 +10,12 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NetListener { }
+public @interface NetListener {
+
+    /**
+     * Type of the listener
+     *
+     * @return  The type of listener
+     */
+    String type();
+}
