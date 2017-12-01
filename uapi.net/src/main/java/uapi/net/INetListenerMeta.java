@@ -10,7 +10,7 @@ public interface INetListenerMeta extends IIdentifiable<String> {
 
     String type();
 
-    INetListenerAttribute[] attributes();
+    NetListenerAttribute[] attributes();
 
     INetListenerInitializer newInitializer();
 }

@@ -15,12 +15,12 @@ import uapi.net.INetChannelHandler;
 import uapi.net.INetListener;
 import uapi.net.annotation.Attribute;
 import uapi.net.annotation.NetListener;
-import uapi.net.telnet.TelnetAttribute;
+import uapi.net.telnet.TelnetAttributes;
 
 import java.net.InetAddress;
 import java.util.Date;
 
-@NetListener(type = TelnetAttribute.TYPE)
+@NetListener(type = TelnetAttributes.TYPE)
 public class TelnetListener implements INetListener {
 
     private static final String DEFAULT_HOST    = "localhost";
@@ -29,13 +29,13 @@ public class TelnetListener implements INetListener {
     private EventLoopGroup _bossGroup;
     private EventLoopGroup _workerGroup;
 
-    @Attribute(name = TelnetAttribute.HOST, isRequired = false)
+    @Attribute(name = TelnetAttributes.HOST, isRequired = false)
     protected String _host = DEFAULT_HOST;
 
-    @Attribute(name = TelnetAttribute.PORT, isRequired = false)
+    @Attribute(name = TelnetAttributes.PORT, isRequired = false)
     protected int _port = DEFAULT_PORT;
 
-    @Attribute(name = TelnetAttribute.HANDLER, isRequired = true)
+    @Attribute(name = TelnetAttributes.HANDLER, isRequired = true)
     protected INetChannelHandler _handler;
 
     @Override
