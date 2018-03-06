@@ -1,7 +1,9 @@
 package uapi.net.internal;
 
+import com.google.auto.service.AutoService;
 import uapi.GeneralException;
 import uapi.codegen.AnnotationsHandler;
+import uapi.codegen.IAnnotationsHandler;
 import uapi.codegen.IBuilderContext;
 import uapi.common.ArgumentChecker;
 import uapi.net.annotation.Attribute;
@@ -11,6 +13,7 @@ import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+@AutoService(IAnnotationsHandler.class)
 public class NetListenerHandler extends AnnotationsHandler {
 
     public static final String MODEL_NAME   = "ListenerModel";

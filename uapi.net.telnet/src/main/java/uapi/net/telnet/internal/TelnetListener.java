@@ -29,13 +29,13 @@ public class TelnetListener implements INetListener {
     private EventLoopGroup _bossGroup;
     private EventLoopGroup _workerGroup;
 
-    @Attribute(name = TelnetAttributes.HOST, isRequired = false)
+    @Attribute(TelnetAttributes.HOST)
     protected String _host = DEFAULT_HOST;
 
-    @Attribute(name = TelnetAttributes.PORT, isRequired = false)
+    @Attribute(TelnetAttributes.PORT)
     protected int _port = DEFAULT_PORT;
 
-    @Attribute(name = TelnetAttributes.HANDLER, isRequired = true)
+    @Attribute(TelnetAttributes.HANDLER)
     protected INetChannelHandler _handler;
 
     @Override

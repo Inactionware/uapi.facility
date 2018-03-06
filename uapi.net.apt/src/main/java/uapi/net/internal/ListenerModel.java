@@ -1,7 +1,6 @@
 package uapi.net.internal;
 
 import uapi.common.ArgumentChecker;
-import uapi.net.NetListenerAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ public class ListenerModel {
     private final String _listenerClassName;
     private final String _initializerClassName;
 
-    private final List<NetListenerAttribute> _attributes;
+    private final List<AttributeModel> _attributes;
 
     public ListenerModel(
             final String listenerType,
@@ -40,11 +39,11 @@ public class ListenerModel {
         return this._listenerClassName;
     }
 
-    public List<NetListenerAttribute> attributes() {
+    public List<AttributeModel> attributes() {
         return this._attributes;
     }
 
-    public void addAttribute(final NetListenerAttribute attribute) {
+    public void addAttribute(final AttributeModel attribute) {
         ArgumentChecker.required(attribute, "attribute");
         this._attributes.add(attribute);
     }

@@ -17,12 +17,12 @@ public @interface Attribute {
      *
      * @return  Name of attribute
      */
-    String name();
+    String value();
 
     /**
      * The attribute is required
      *
      * @return  The attribute is required when create new listener
      */
-    boolean isRequired();
+    boolean isRequired() default false;
 }
