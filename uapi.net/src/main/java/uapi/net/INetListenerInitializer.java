@@ -5,6 +5,9 @@ package uapi.net;
  */
 public interface INetListenerInitializer {
 
+    String METHOD_SET_ATTRIBUTE = "setAttribute";
+    String METHOD_NEW_LISTENER  = "newListener";
+
     /**
      * Set attribute
      *

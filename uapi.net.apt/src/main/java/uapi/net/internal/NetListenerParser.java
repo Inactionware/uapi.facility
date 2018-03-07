@@ -1,11 +1,14 @@
 package uapi.net.internal;
 
+import freemarker.template.Template;
 import uapi.GeneralException;
-import uapi.codegen.ClassMeta;
-import uapi.codegen.IBuilderContext;
+import uapi.codegen.*;
 import uapi.net.INetListener;
+import uapi.net.INetListenerInitializer;
+import uapi.net.INetListenerMeta;
 import uapi.net.annotation.NetListener;
 import uapi.rx.Looper;
+import uapi.service.IServiceHandlerHelper;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
@@ -14,11 +17,16 @@ import java.util.Set;
 
 public class NetListenerParser {
 
-    public static final String makeInitializerClassName(String listenerClassName) {
+    private static final String TEMP_SET_ATTRIBUTE  = "template/setAttribute_method.ftl";
+    private static final String TEMP_NEW_LISTENER   = "template/newListener_method.ftl";
+
+    private static final String TEMP_ATTRIBUTES     = "template/attributes_method.ftl";
+
+    static String makeInitializerClassName(String listenerClassName) {
         return listenerClassName + "_Initializer_Generated";
     }
 
-    public static final String makeMetaClassName(String listenerClassName) {
+    static String makeMetaClassName(String listenerClassName) {
         return listenerClassName + "_Meta_Generated";
     }
 
@@ -69,19 +77,95 @@ public class NetListenerParser {
                 }
             }
 
+            // Create model
             String listenerClassName = classElement.getSimpleName().toString();
             ClassMeta.Builder listenerClassBuilder = builderCtx.findClassBuilder(classElement);
 
             String initializerClassName = makeInitializerClassName(listenerClassName);
             ClassMeta.Builder initializerClassBuilder = builderCtx.newClassBuilder(pkgName, initializerClassName);
 
-            String metaClassName = makeInitializerClassName(listenerClassName);
+            String metaClassName = makeMetaClassName(listenerClassName);
             ClassMeta.Builder listenerMetaClsBuilder = builderCtx.newClassBuilder(pkgName, metaClassName);
 
-            ListenerModel model = new ListenerModel(type, listenerClassName, initializerClassName);
+            ListenerModel model = new ListenerModel(type, listenerClassBuilder.getGeneratedClassName(), initializerClassName);
             listenerClassBuilder.putTransience(NetListenerHandler.MODEL_NAME, model);
             initializerClassBuilder.putTransience(NetListenerHandler.MODEL_NAME, model);
             listenerMetaClsBuilder.putTransience(NetListenerHandler.MODEL_NAME, model);
+
+            // Create method for listener initializer class
+            Template tempSetAttribute = builderCtx.loadTemplate(TEMP_SET_ATTRIBUTE);
+            Template tempNewListener = builderCtx.loadTemplate(TEMP_NEW_LISTENER);
+            initializerClassBuilder
+                    .addImplement(INetListenerInitializer.class.getCanonicalName())
+                    .addFieldBuilder(FieldMeta.builder()
+                            .addModifier(Modifier.PRIVATE, Modifier.FINAL)
+                            .setName("_meta")
+                            .setTypeName(INetListenerMeta.class.getCanonicalName()))
+                    .addFieldBuilder(FieldMeta.builder()
+                            .addModifier(Modifier.PRIVATE)
+                            .setName("_attributes")
+                            .setIsMap(true)
+                            .setTypeName(Object.class.getCanonicalName())
+                            .setKeyTypeName(String.class.getCanonicalName()))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .setName(initializerClassBuilder.getGeneratedClassName())
+                            .addParameterBuilder(ParameterMeta.builder()
+                                    .setName("meta")
+                                    .setType(INetListenerMeta.class.getCanonicalName()))
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .addRawCode("this._meta = meta;")))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
+                            .setName(INetListenerInitializer.METHOD_SET_ATTRIBUTE)
+                            .setReturnTypeName(INetListenerInitializer.class.getCanonicalName())
+                            .addParameterBuilder(ParameterMeta.builder()
+                                    .setName("name")
+                                    .setType(String.class.getCanonicalName()))
+                            .addParameterBuilder(ParameterMeta.builder()
+                                    .setName("value")
+                                    .setType(Object.class.getCanonicalName()))
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setTemplate(tempSetAttribute)
+                                    .setModel(model)))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
+                            .setName(INetListenerInitializer.METHOD_NEW_LISTENER)
+                            .setReturnTypeName(INetListener.class.getCanonicalName())
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setTemplate(tempNewListener)
+                                    .setModel(model)));
+
+            // Create method for listener meta class
+            Template tempAttributes = builderCtx.loadTemplate(TEMP_ATTRIBUTES);
+            listenerMetaClsBuilder
+                    .addImplement(INetListenerMeta.class.getCanonicalName())
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
+                            .setReturnTypeName(String.class.getCanonicalName())
+                            .setName("type")
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .addRawCode("return \"{}\";", type)))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
+                            .setReturnTypeName("uapi.net.NetListenerAttribute[]")
+                            .setName("attributes")
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .setTemplate(tempAttributes)
+                                    .setModel(model)))
+                    .addMethodBuilder(MethodMeta.builder()
+                            .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                            .addModifier(Modifier.PUBLIC)
+                            .setReturnTypeName(INetListenerInitializer.class.getCanonicalName())
+                            .setName("newInitializer")
+                            .addCodeBuilder(CodeMeta.builder()
+                                    .addRawCode("return new {}(this);", initializerClassName)));
+            // The listener meta must be a Service
+            IServiceHandlerHelper svcHelper = (IServiceHandlerHelper) builderCtx.getHelper(IServiceHandlerHelper.name);
+            svcHelper.becomeService(builderCtx, listenerMetaClsBuilder, listenerMetaClsBuilder.getPackageName() + "." + metaClassName);
         });
     }
 }

@@ -27,19 +27,19 @@ public class ListenerModel {
         this._attributes = new ArrayList<>();
     }
 
-    public String listenerType() {
+    public String getListenerType() {
         return this._listenerType;
     }
 
-    public String initializerClassName() {
+    public String getInitializerClassName() {
         return this._initializerClassName;
     }
 
-    public String listenerClassName() {
+    public String getListenerClassName() {
         return this._listenerClassName;
     }
 
-    public List<AttributeModel> attributes() {
+    public List<AttributeModel> getAttributes() {
         return this._attributes;
     }
 

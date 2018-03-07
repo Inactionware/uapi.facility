@@ -8,10 +8,10 @@ import uapi.net.http.HttpAttributes;
 @NetListener(type = HttpAttributes.TYPE)
 public class HttpListener implements INetListener {
 
-    @Attribute(HttpAttributes.HOST)
+    @Attribute(value = HttpAttributes.HOST, isRequired = true)
     protected String _host;
 
-    @Attribute(HttpAttributes.PORT)
+    @Attribute(value = HttpAttributes.PORT, isRequired = true)
     protected int _port;
 
     @Override

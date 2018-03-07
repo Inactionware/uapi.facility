@@ -3,8 +3,8 @@ package uapi.net.internal;
 public class AttributeModel {
 
     private String _name;
-    private String _fieldName;
-    private String _fieldType;
+    private String _setterName;
+    private String _type;
     private boolean _isRequired;
 
     public String getName() {
@@ -15,23 +15,23 @@ public class AttributeModel {
         this._name = name;
     }
 
-    public String getFieldName() {
-        return this._fieldName;
+    public String getSetterName() {
+        return this._setterName;
     }
 
-    public void setFieldName(String fieldName) {
-        this._fieldName = fieldName;
+    public void setSetterName(String setterName) {
+        this._setterName = setterName;
     }
 
-    public String getFieldType() {
-        return this._fieldType;
+    public String getType() {
+        return this._type;
     }
 
-    public void setFieldType(String type) {
-        this._fieldType = type;
+    public void setType(String type) {
+        this._type = type;
     }
 
-    public Boolean isRequired() {
+    public boolean isRequired() {
         return this._isRequired;
     }
 
