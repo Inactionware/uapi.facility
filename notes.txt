@@ -1,2 +1,3 @@
 Module error category mapping:
     uapi.web    0x0200
+    uapi.net    0x0201
