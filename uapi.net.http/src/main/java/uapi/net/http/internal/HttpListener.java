@@ -1,6 +1,7 @@
 package uapi.net.http.internal;
 
 import uapi.net.INetListener;
+import uapi.net.NetException;
 import uapi.net.annotation.Attribute;
 import uapi.net.annotation.NetListener;
 import uapi.net.http.HttpAttributes;
@@ -15,12 +16,12 @@ public class HttpListener implements INetListener {
     protected int _port;
 
     @Override
-    public void startUp() throws Exception {
+    public void startUp() throws NetException {
 
     }
 
     @Override
-    public void shutDown() throws Exception {
+    public void shutDown() throws NetException {
 
     }
 }
