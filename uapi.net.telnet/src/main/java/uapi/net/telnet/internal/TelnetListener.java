@@ -11,12 +11,15 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import uapi.GeneralException;
 import uapi.net.INetChannelHandler;
 import uapi.net.INetListener;
+import uapi.net.NetException;
 import uapi.net.annotation.Attribute;
 import uapi.net.annotation.NetListener;
 import uapi.net.telnet.TelnetAttributes;
 
+import javax.lang.model.element.ExecutableElement;
 import java.net.InetAddress;
 import java.util.Date;
 
@@ -39,7 +42,7 @@ public class TelnetListener implements INetListener {
     protected INetChannelHandler _handler;
 
     @Override
-    public void startUp() throws Exception {
+    public void startUp() throws NetException {
         this._bossGroup = new NioEventLoopGroup(1);
         this._workerGroup = new NioEventLoopGroup();
 
@@ -51,6 +54,8 @@ public class TelnetListener implements INetListener {
                     .childHandler(new TelNetInitializer());
             Channel ch = bootstrap.bind(this._host, this._port).sync().channel();
             ch.closeFuture().sync();
+        } catch (Exception ex) {
+            // do nothing
         } finally {
             this._bossGroup.shutdownGracefully();
             this._workerGroup.shutdownGracefully();
@@ -58,7 +63,7 @@ public class TelnetListener implements INetListener {
     }
 
     @Override
-    public void shutDown() throws Exception {
+    public void shutDown() throws NetException {
         if (this._bossGroup != null) {
             this._bossGroup.shutdownGracefully();
         }

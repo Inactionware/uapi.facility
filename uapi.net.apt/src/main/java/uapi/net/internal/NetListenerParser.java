@@ -165,7 +165,7 @@ public class NetListenerParser {
                                     .addRawCode("return new {}(this);", initializerClassName)));
             // The listener meta must be a Service
             IServiceHandlerHelper svcHelper = (IServiceHandlerHelper) builderCtx.getHelper(IServiceHandlerHelper.name);
-            svcHelper.becomeService(builderCtx, listenerMetaClsBuilder, listenerMetaClsBuilder.getPackageName() + "." + metaClassName);
+            svcHelper.becomeService(builderCtx, listenerMetaClsBuilder, INetListenerMeta.class.getCanonicalName());
         });
     }
 }

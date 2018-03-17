@@ -8,6 +8,10 @@ import uapi.exception.ParameterizedException;
  */
 public class NetException extends ParameterizedException {
 
+    public static NetExceptionBuilder builder() {
+        return new NetExceptionBuilder();
+    }
+
     protected NetException(ExceptionBuilder builder) {
         super(builder);
     }
