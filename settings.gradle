@@ -2,6 +2,5 @@ rootProject.name = 'uapi.facility'
 
 include 'uapi.service.spring'
 include 'uapi.net', 'uapi.net.apt', 'uapi.net.telnet', 'uapi.net.http'
-include 'uapi.web', 'uapi.web.apt', 'uapi.web.servlet'
-include 'uapi.app.terminal', 'uapi.app.web'
-include 'uapi.facility.example', 'uapi.facility.example.web'
+include 'uapi.app.terminal'
+include 'uapi.facility.example'
