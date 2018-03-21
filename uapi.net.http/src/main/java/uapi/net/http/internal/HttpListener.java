@@ -13,9 +13,21 @@ import uapi.net.NetException;
 import uapi.net.annotation.Attribute;
 import uapi.net.annotation.NetListener;
 import uapi.net.http.HttpAttributes;
+import uapi.state.IChecker;
+import uapi.state.IShifter;
+import uapi.state.IStateTracer;
+import uapi.state.StateCreator;
 
+/**
+ * State transition:
+ *   |￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+ *   -> Stopped --(startUp)-> Starting -> Started --(shutDown)-> Stopping
+ */
 @NetListener(type = HttpAttributes.TYPE)
 public class HttpListener implements INetListener {
+
+    private static final String OP_START_UP         = "startUp";
+    private static final String OP_SHUT_DOWN        = "shutDown";
 
     @Attribute(value = HttpAttributes.HOST, isRequired = true)
     protected String _host;
@@ -28,8 +40,58 @@ public class HttpListener implements INetListener {
 
     private ChannelFuture _channelFuture;
 
+    private final IStateTracer<ListenerState> _stateTracer;
+
+    public HttpListener() {
+        // Create state transition rule
+        IChecker<ListenerState> stateChecker = (currentState, operation) -> {
+            ListenerState temporaryState = null;
+            switch (operation.type()) {
+                case OP_START_UP:
+                    if (currentState.value() == ListenerState.Stopped.value()) {
+                        temporaryState = ListenerState.Starting;
+                    }
+                    break;
+                case OP_SHUT_DOWN:
+                    if (currentState == ListenerState.Started) {
+                        temporaryState = ListenerState.Stopping;
+                    }
+                    break;
+                default:
+                    throw new GeneralException();
+            }
+            return temporaryState;
+        };
+        IShifter<ListenerState> stateShifter = (currentState, operation) -> {
+            ListenerState newState;
+            switch(operation.type()) {
+                case OP_START_UP:
+                    innerStartUp();
+                    newState = ListenerState.Started;
+                    break;
+                case OP_SHUT_DOWN:
+                    innerShutDown();
+                    newState = ListenerState.Stopped;
+                    break;
+                default:
+                    throw new GeneralException();
+            }
+            return newState;
+        };
+        this._stateTracer = StateCreator.createTracer(stateShifter, ListenerState.Stopped, stateChecker);
+    }
+
     @Override
-    public void startUp() throws NetException {
+    public void startUp() {
+        this._stateTracer.shift(OP_START_UP);
+    }
+
+    @Override
+    public void shutDown() {
+        this._stateTracer.shift(OP_SHUT_DOWN);
+    }
+
+    private void innerStartUp() throws NetException {
         this._bossGroup = new NioEventLoopGroup();
         this._workerGroup = new NioEventLoopGroup();
         ServerBootstrap svcBootstrap = new ServerBootstrap();
@@ -45,13 +107,13 @@ public class HttpListener implements INetListener {
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         try {
             this._channelFuture = svcBootstrap.bind(this._host, this._port).sync();
-        } catch (Exception ex) {
-            throw new GeneralException(ex);
+        } catch (InterruptedException ex) {
+            innerShutDown();
+            throw NetException.builder().cause(ex).build();
         }
     }
 
-    @Override
-    public void shutDown() throws NetException {
+    private void innerShutDown() throws NetException {
         if (this._workerGroup != null) {
             this._workerGroup.shutdownGracefully();
         }
