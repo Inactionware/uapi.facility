@@ -1,9 +1,11 @@
 package uapi.net.http;
 
+import uapi.net.IRequest;
+
 import java.util.List;
 import java.util.Map;
 
-public interface IHttpRequest {
+public interface IHttpRequest extends IRequest {
 
     HttpVersion version();
 

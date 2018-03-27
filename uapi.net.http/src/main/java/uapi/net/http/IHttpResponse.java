@@ -1,6 +1,8 @@
 package uapi.net.http;
 
-public interface IHttpResponse {
+import uapi.net.IResponse;
+
+public interface IHttpResponse extends IResponse {
 
     void setVersion(HttpVersion version);
 

@@ -13,14 +13,17 @@ plugins {
 
 dependencies {
     compileOnly (
-            "uapi:uapi.service.apt:${uapi_cornerstone_version}"
+            "uapi:uapi.service.apt:${uapi_cornerstone_version}",
+            "uapi:uapi.behavior.apt:${uapi_cornerstone_version}"
     )
 
     compile (
+            project(':uapi.net'),
+
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",
             "uapi:uapi.service:${uapi_cornerstone_version}",
-            "uapi:uapi.event:${uapi_cornerstone_version}"
+            "uapi:uapi.behavior:${uapi_cornerstone_version}"
     )
 }
 

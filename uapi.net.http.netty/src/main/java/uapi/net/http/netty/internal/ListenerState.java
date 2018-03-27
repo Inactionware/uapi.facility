@@ -1,4 +1,4 @@
-package uapi.net.http.internal;
+package uapi.net.http.netty.internal;
 
 public enum ListenerState {
 

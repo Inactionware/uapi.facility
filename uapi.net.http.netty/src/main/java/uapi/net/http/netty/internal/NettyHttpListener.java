@@ -1,4 +1,4 @@
-package uapi.net.http.internal;
+package uapi.net.http.netty.internal;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -18,13 +18,8 @@ import uapi.state.IShifter;
 import uapi.state.IStateTracer;
 import uapi.state.StateCreator;
 
-/**
- * State transition:
- *   |￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
- *   -> Stopped --(startUp)-> Starting -> Started --(shutDown)-> Stopping
- */
 @NetListener(type = HttpAttributes.TYPE)
-public class HttpListener implements INetListener {
+public class NettyHttpListener implements INetListener {
 
     private static final String OP_START_UP         = "startUp";
     private static final String OP_SHUT_DOWN        = "shutDown";
@@ -42,7 +37,7 @@ public class HttpListener implements INetListener {
 
     private final IStateTracer<ListenerState> _stateTracer;
 
-    public HttpListener() {
+    public NettyHttpListener() {
         // Create state transition rule
         IChecker<ListenerState> stateChecker = (currentState, operation) -> {
             ListenerState temporaryState = null;
