@@ -1,4 +1,4 @@
-package uapi.protocol.graphql;
+package uapi.protocol.graphql.internal;
 
 import uapi.protocol.IProtocolEncoder;
 import uapi.protocol.ResourceProcessing;

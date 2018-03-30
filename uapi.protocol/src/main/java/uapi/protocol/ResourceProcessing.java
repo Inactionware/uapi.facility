@@ -14,13 +14,18 @@ public class ResourceProcessing {
     private final INetEvent _event;
     private final List<ResourceOperation> _resOps;
     private final ResourceResult _resResult;
+    private final IProtocol _proto;
 
-    public ResourceProcessing(final INetEvent event) {
+    public ResourceProcessing(
+            final INetEvent event,
+            final IProtocol protocol) {
         ArgumentChecker.required(event, "event");
+        ArgumentChecker.required(protocol, "protocol");
 
         this._event = event;
         this._resOps = new ArrayList<>();
         this._resResult = new ResourceResult();
+        this._proto = protocol;
     }
 
     public IRequest originalRequest() {
@@ -42,5 +47,13 @@ public class ResourceProcessing {
 
     public ResourceResult result() {
         return this._resResult;
+    }
+
+    public IProtocolDecoder decoder() {
+        return this._proto.decoder();
+    }
+
+    public IProtocolEncoder encoder() {
+        return this._proto.encoder();
     }
 }
