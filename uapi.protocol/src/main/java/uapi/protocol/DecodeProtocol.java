@@ -11,9 +11,6 @@ import java.util.Map;
 @Action
 public class DecodeProtocol {
 
-    @Inject
-    Map<String, IProtocolDecoder> decoders;
-
     @ActionDo
     public ResourceProcessing decode(ResourceProcessing processing) {
         return processing;
