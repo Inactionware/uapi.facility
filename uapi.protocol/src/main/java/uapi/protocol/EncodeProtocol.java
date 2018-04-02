@@ -12,29 +12,26 @@ package uapi.protocol;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
 import uapi.common.ArgumentChecker;
-import uapi.net.INetEvent;
-import uapi.service.annotation.Inject;
 import uapi.service.annotation.Service;
 
 @Service
 @Action
-public class InitProcessing {
-
-    @Inject
-    protected IProtocolRegistry _protoReg;
+public class EncodeProtocol {
 
     @ActionDo
-    public ResourceProcessing process(final INetEvent event) {
-        ArgumentChecker.required(event, "event");
+    public ResourceProcessing encode(
+            final ResourceProcessing processing
+    ) {
+        ArgumentChecker.required(processing, "processing");
 
-        IProtocol proto = this._protoReg.find(event);
-        if (proto == null) {
+        IProtocolEncoder encoder = processing.encoder();
+        if (encoder == null) {
             throw ProtocolException.builder()
-                    .errorCode(ProtocolErrors.PROTOCOL_NOT_FOUND)
-                    .variables(event.request())
+                    .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)
+                    .variables(processing.originalRequest())
                     .build();
         }
 
-        return new ResourceProcessing(event, proto);
+        return encoder.encode(processing);
     }
 }
