@@ -9,6 +9,7 @@
 
 package uapi.protocol;
 
+import uapi.behavior.BehaviorFailure;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
 import uapi.common.ArgumentChecker;
@@ -20,20 +21,20 @@ public class ErrorProcessing {
 
     @ActionDo
     public void process(
-            final Exception exception,
-            final ResourceProcessing lastProcessing
+            final BehaviorFailure failure
     ) {
-        ArgumentChecker.required(exception, "exception");
-        ArgumentChecker.required(lastProcessing, "lastProcessing");
+        ArgumentChecker.required(failure, "failure");
 
-        IProtocolEncoder encoder = lastProcessing.encoder();
+        Exception exception = failure.cause();
+        ResourceProcessing processing = (ResourceProcessing) failure.failureInput();
+        IProtocolEncoder encoder = processing.encoder();
         if (encoder == null) {
             throw ProtocolException.builder()
                     .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)
-                    .variables(lastProcessing.originalRequest())
+                    .variables(processing.originalRequest())
                     .build();
         }
 
-        encoder.encodeError(exception, lastProcessing);
+        encoder.encodeError(exception, processing);
     }
 }

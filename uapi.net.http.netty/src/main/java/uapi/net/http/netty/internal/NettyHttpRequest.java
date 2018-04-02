@@ -20,6 +20,16 @@ import java.util.Map;
 public class NettyHttpRequest implements IHttpRequest {
 
     @Override
+    public String peerAddress() {
+        return null;
+    }
+
+    @Override
+    public int peerPort() {
+        return 0;
+    }
+
+    @Override
     public HttpVersion version() {
         return null;
     }
