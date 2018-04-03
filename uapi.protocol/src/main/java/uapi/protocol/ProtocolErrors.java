@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtocolErrors extends FileBasedExceptionErrors<ProtocolException> {
 
-    public static final int CATEGORY    = 0x0202;
+    public static final int CATEGORY    = 0x0210;
 
     public static final int PROTOCOL_NOT_FOUND          = 1;
     public static final int ENCODER_NOT_DEFINED         = 2;

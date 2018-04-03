@@ -14,8 +14,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
 import uapi.net.INetListener;
 import uapi.net.NetException;
@@ -99,13 +98,13 @@ public class NettyHttpListener implements INetListener {
         this._bossGroup = new NioEventLoopGroup();
         this._workerGroup = new NioEventLoopGroup();
         ServerBootstrap svcBootstrap = new ServerBootstrap();
-        svcBootstrap.group(this._bossGroup, this._workerGroup).channel(NioServerSocketChannel.class)
+        svcBootstrap.group(this._bossGroup, this._workerGroup)
+                .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel channel) throws Exception {
-                        channel.pipeline().addLast(new HttpResponseEncoder());
-                        channel.pipeline().addLast(new HttpRequestDecoder());
-//                        channel.pipeline().addLast(new HttpS)
+                    protected void initChannel(SocketChannel channel) {
+                        channel.pipeline().addLast(new HttpServerCodec());
+                        channel.pipeline().addLast(new HttpRequestHandler());
                     }
                 }).option(ChannelOption.SO_BACKLOG, 28)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -131,14 +130,6 @@ public class NettyHttpListener implements INetListener {
             }
         } catch (InterruptedException ex) {
             // do nothing
-        }
-    }
-
-    private class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
-
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
         }
     }
 }

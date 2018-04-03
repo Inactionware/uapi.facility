@@ -11,6 +11,8 @@ package uapi.net.http;
 
 import uapi.net.IRequest;
 
+import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +22,19 @@ public interface IHttpRequest extends IRequest {
 
     HttpMethod method();
 
-    ContentType conentType();
+    String uri();
 
-    Map<String, String> headers();
+    String path();
 
-    Map<String, List<String>> params();
+    ContentType contentType();
+
+    Charset charset();
+
+    Iterator<Map.Entry<String, String>> headers();
+
+    String header(String key);
+
+    Iterator<Map.Entry<String, List<String>>> params();
+
+    List<String> param(String key);
 }
