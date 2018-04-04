@@ -37,4 +37,6 @@ public interface IHttpRequest extends IRequest {
     Iterator<Map.Entry<String, List<String>>> params();
 
     List<String> param(String key);
+
+    boolean isKeepAlive();
 }

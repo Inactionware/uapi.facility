@@ -11,6 +11,7 @@ package uapi.net.http.netty.internal;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.CharsetUtil;
 import uapi.common.ArgumentChecker;
@@ -42,37 +43,9 @@ public class NettyHttpRequest implements IHttpRequest {
         ArgumentChecker.required(request, "request");
         this._nettyHttpReq = request;
 
-        // Decode http version
-        io.netty.handler.codec.http.HttpVersion ver = request.protocolVersion();
-        if (io.netty.handler.codec.http.HttpVersion.HTTP_1_0.equals(ver)) {
-            this._httpVer = HttpVersion.V_1_0;
-        } else if (io.netty.handler.codec.http.HttpVersion.HTTP_1_1.equals(ver)) {
-            this._httpVer = HttpVersion.V_1_1;
-        } else {
-            throw HttpException.builder()
-                    .errorCode(HttpErrors.UNSUPPORTED_HTTP_VERSION)
-                    .variables(ver.text())
-                    .build();
-        }
-
-        // Decode http method
-        io.netty.handler.codec.http.HttpMethod method = request.method();
-        if (io.netty.handler.codec.http.HttpMethod.GET.equals(method)) {
-            this._method = HttpMethod.GET;
-        } else if (io.netty.handler.codec.http.HttpMethod.PUT.equals(method)) {
-            this._method = HttpMethod.PUT;
-        } else if (io.netty.handler.codec.http.HttpMethod.POST.equals(method)) {
-            this._method = HttpMethod.POST;
-        } else if (io.netty.handler.codec.http.HttpMethod.PATCH.equals(method)) {
-            this._method = HttpMethod.PATCH;
-        } else if (io.netty.handler.codec.http.HttpMethod.DELETE.equals(method)) {
-            this._method = HttpMethod.DELETE;
-        } else {
-            throw HttpException.builder()
-                    .errorCode(HttpErrors.UNSUPPORTED_HTTP_METHOD)
-                    .variables(method.name())
-                    .build();
-        }
+        // Decode http version and method
+        this._httpVer = HttpVersionConverter.toUapiVersion(request.protocolVersion());
+        this._method = HttpMethodConverter.toUapiVersion(request.method());
 
         // Decode request uri
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
@@ -168,5 +141,10 @@ public class NettyHttpRequest implements IHttpRequest {
     public List<String> param(final String key) {
         ArgumentChecker.required(key, "key");
         return this._params.get(key);
+    }
+
+    @Override
+    public boolean isKeepAlive() {
+        return HttpUtil.isKeepAlive(this._nettyHttpReq);
     }
 }
