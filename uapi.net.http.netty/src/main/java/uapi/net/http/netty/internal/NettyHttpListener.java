@@ -18,24 +18,28 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
 import uapi.net.INetListener;
 import uapi.net.NetException;
-import uapi.net.annotation.Attribute;
-import uapi.net.annotation.NetListener;
 import uapi.net.http.HttpAttributes;
+import uapi.net.http.IHttpListener;
+import uapi.service.ServiceType;
+import uapi.service.annotation.Attribute;
+import uapi.service.annotation.Service;
 import uapi.state.IChecker;
 import uapi.state.IShifter;
 import uapi.state.IStateTracer;
 import uapi.state.StateCreator;
 
-@NetListener(type = HttpAttributes.TYPE)
-public class NettyHttpListener implements INetListener {
+@Service(
+        type = ServiceType.Prototype,
+        value = INetListener.class)
+public class NettyHttpListener implements IHttpListener {
 
     private static final String OP_START_UP         = "startUp";
     private static final String OP_SHUT_DOWN        = "shutDown";
 
-    @Attribute(value = HttpAttributes.HOST, isRequired = true)
+    @Attribute(HttpAttributes.HOST)
     protected String _host;
 
-    @Attribute(value = HttpAttributes.PORT, isRequired = true)
+    @Attribute(HttpAttributes.PORT)
     protected int _port;
 
     private EventLoopGroup _bossGroup;
