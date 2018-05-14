@@ -13,16 +13,15 @@ plugins {
 
 dependencies {
     compileOnly (
-            "uapi:uapi.service.apt:${uapi_cornerstone_version}",
-            project(':uapi.net.apt')
+            "uapi:uapi.service.apt:${uapi_cornerstone_version}"
     )
 
     compile (
             project(':uapi.net'),
-            project(':uapi.net.apt'),
 
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",
+            "uapi:uapi.state:${uapi_base_version}",
             "uapi:uapi.service:${uapi_cornerstone_version}",
 
             "io.netty:netty-all:${netty_version}"

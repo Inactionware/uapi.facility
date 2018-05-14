@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2017. The UAPI Authors
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at the LICENSE file.
+ *
+ * You must gained the permission from the authors if you want to
+ * use the project into a commercial product
+ */
+
 package uapi.net.telnet.internal;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -11,20 +20,22 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import uapi.GeneralException;
 import uapi.net.INetChannelHandler;
-import uapi.net.INetListener;
 import uapi.net.NetException;
-import uapi.net.annotation.Attribute;
-import uapi.net.annotation.NetListener;
+import uapi.net.telnet.ITelnetListener;
 import uapi.net.telnet.TelnetAttributes;
+import uapi.service.ServiceType;
+import uapi.service.annotation.Attribute;
+import uapi.service.annotation.Service;
 
-import javax.lang.model.element.ExecutableElement;
 import java.net.InetAddress;
 import java.util.Date;
 
-@NetListener(type = TelnetAttributes.TYPE)
-public class TelnetListener implements INetListener {
+@Service(
+        value = ITelnetListener.class,
+        type = ServiceType.Prototype
+)
+public class TelnetListener implements ITelnetListener {
 
     private static final String DEFAULT_HOST    = "localhost";
     private static final int DEFAULT_PORT       = 23;
