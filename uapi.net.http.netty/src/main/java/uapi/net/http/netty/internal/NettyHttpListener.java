@@ -16,7 +16,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
-import uapi.net.INetListener;
 import uapi.net.NetException;
 import uapi.net.http.HttpAttributes;
 import uapi.net.http.IHttpListener;
@@ -30,7 +29,7 @@ import uapi.state.StateCreator;
 
 @Service(
         type = ServiceType.Prototype,
-        value = INetListener.class)
+        value = IHttpListener.class)
 public class NettyHttpListener implements IHttpListener {
 
     private static final String OP_START_UP         = "startUp";
