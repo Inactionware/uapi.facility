@@ -26,18 +26,16 @@ public class HttpEvent implements INetEvent {
     public HttpEvent(
             final String type,
             final IHttpRequest request,
-            final IHttpResponse response,
-            final HttpErrorHandler errorHandler
+            final IHttpResponse response
     ) {
         ArgumentChecker.required(type, "type");
         ArgumentChecker.required(request, "request");
         ArgumentChecker.required(response, "response");
-        ArgumentChecker.required(errorHandler, "errorHandler");
 
         this._type = type;
         this._request = request;
         this._response = response;
-        this._errHandler = errorHandler;
+        this._errHandler = new HttpErrorHandler(this._response);
     }
 
     @Override

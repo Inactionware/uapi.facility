@@ -16,11 +16,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
+import uapi.log.ILogger;
 import uapi.net.NetException;
 import uapi.net.http.HttpAttributes;
 import uapi.net.http.IHttpListener;
 import uapi.service.ServiceType;
 import uapi.service.annotation.Attribute;
+import uapi.service.annotation.Inject;
 import uapi.service.annotation.Service;
 import uapi.state.IChecker;
 import uapi.state.IShifter;
@@ -40,6 +42,9 @@ public class NettyHttpListener implements IHttpListener {
 
     @Attribute(HttpAttributes.PORT)
     protected int _port;
+
+    @Inject
+    protected ILogger _logger;
 
     private EventLoopGroup _bossGroup;
     private EventLoopGroup _workerGroup;
@@ -117,6 +122,7 @@ public class NettyHttpListener implements IHttpListener {
             innerShutDown();
             throw NetException.builder().cause(ex).build();
         }
+        this._logger.info("Http listener listen on {}:{}", this._host, this._port);
     }
 
     private void innerShutDown() throws NetException {
@@ -134,5 +140,6 @@ public class NettyHttpListener implements IHttpListener {
         } catch (InterruptedException ex) {
             // do nothing
         }
+        this._logger.info("Http listener stop listen on {}:{}", this._host, this._port);
     }
 }
