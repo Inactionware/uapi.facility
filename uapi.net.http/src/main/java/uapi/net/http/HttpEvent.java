@@ -9,30 +9,31 @@
 
 package uapi.net.http;
 
+import uapi.behavior.BehaviorEvent;
 import uapi.common.ArgumentChecker;
 import uapi.common.StringHelper;
 import uapi.net.IErrorHandler;
 import uapi.net.INetEvent;
 
-public class HttpEvent implements INetEvent {
+public class HttpEvent extends BehaviorEvent implements INetEvent {
 
+    public static final String TYPE     = "HTTP";
     public static final String TOPIC    = "HttpRequest";
 
-    private final String _type;
     private final IHttpRequest _request;
     private final IHttpResponse _response;
     private final HttpErrorHandler _errHandler;
 
     public HttpEvent(
-            final String type,
+            final String sourceName,
             final IHttpRequest request,
             final IHttpResponse response
     ) {
-        ArgumentChecker.required(type, "type");
+        super(TOPIC, sourceName);
+
         ArgumentChecker.required(request, "request");
         ArgumentChecker.required(response, "response");
 
-        this._type = type;
         this._request = request;
         this._response = response;
         this._errHandler = new HttpErrorHandler(this._response);
@@ -40,12 +41,7 @@ public class HttpEvent implements INetEvent {
 
     @Override
     public String type() {
-        return this._type;
-    }
-
-    @Override
-    public String topic() {
-        return TOPIC;
+        return TYPE;
     }
 
     @Override
@@ -65,6 +61,6 @@ public class HttpEvent implements INetEvent {
 
     @Override
     public String toString() {
-        return StringHelper.makeString("HttpEvent: type={}", this._type);
+        return StringHelper.makeString("HttpEvent: type={}", type());
     }
 }

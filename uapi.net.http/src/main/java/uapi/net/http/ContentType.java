@@ -18,6 +18,7 @@ public enum ContentType {
     FORM_URLENCODED("application/x-www-form-urlencoded"),
     TEXT("text/plain"),
     JSON("application/json"),
+    GRAPHQL("application/graphql"),
     JAVASCRIPT("application/javascript"),
     XML("text/xml"),
     HTML("text/html");

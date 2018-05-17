@@ -101,4 +101,13 @@ public class NettyHttpResponse implements IHttpResponse {
         this._ctx.writeAndFlush(response);
         this._flashed.set(true);
     }
+
+    @Override
+    public void close() {
+        if (! this._flashed.get()) {
+            flush();
+        }
+
+        this._ctx.close();
+    }
 }

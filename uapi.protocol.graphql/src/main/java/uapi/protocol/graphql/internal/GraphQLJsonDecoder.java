@@ -15,7 +15,9 @@ import uapi.protocol.ResourceProcessing;
 public class GraphQLJsonDecoder implements IProtocolDecoder {
 
     @Override
-    public ResourceProcessing decode(ResourceProcessing resourceProcessing) {
+    public ResourceProcessing decode(
+            final ResourceProcessing resourceProcessing
+    ) {
         return null;
     }
 }

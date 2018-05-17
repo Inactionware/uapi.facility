@@ -12,7 +12,7 @@ package uapi.protocol.graphql.internal;
 import uapi.protocol.IProtocolEncoder;
 import uapi.protocol.ResourceProcessing;
 
-public class GraphQLJsonEnncoder implements IProtocolEncoder {
+public class GraphQLJsonEncoder implements IProtocolEncoder {
     @Override
     public ResourceProcessing encode(ResourceProcessing resourceProcessing) {
         return null;

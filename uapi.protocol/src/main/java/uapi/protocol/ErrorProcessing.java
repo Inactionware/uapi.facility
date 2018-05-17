@@ -9,6 +9,7 @@
 
 package uapi.protocol;
 
+import uapi.behavior.ActionIdentify;
 import uapi.behavior.BehaviorFailure;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
@@ -18,6 +19,8 @@ import uapi.service.annotation.Service;
 @Service
 @Action
 public class ErrorProcessing {
+
+    public static final ActionIdentify actionId = ActionIdentify.toActionId(ErrorProcessing.class);
 
     @ActionDo
     public void process(
@@ -35,6 +38,7 @@ public class ErrorProcessing {
                     .build();
         }
 
-        encoder.encodeError(exception, processing);
+        processing = encoder.encodeError(exception, processing);
+        processing.originalResponse().flush();
     }
 }

@@ -9,25 +9,23 @@
 
 package uapi.net.http.netty.internal;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import uapi.common.ArgumentChecker;
 import uapi.net.http.*;
+import uapi.net.http.HttpMethod;
+import uapi.net.http.HttpVersion;
 import uapi.rx.Looper;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NettyHttpRequest implements IHttpRequest {
 
     private static final ContentType DEFAULT_CONTENT_TYPE   = ContentType.TEXT;
     private static final Charset DEFAULT_CHARSET            = CharsetUtil.UTF_8;
+    private static final int DEFAULT_CONTENT_LENGTH         = 0;
 
     private final HttpRequest               _nettyHttpReq;
     private final HttpVersion               _httpVer;
@@ -35,9 +33,13 @@ public class NettyHttpRequest implements IHttpRequest {
     private final String                    _uri;
     private final String                    _path;
     private final ContentType               _contentType;
+    private final int                       _contentLength;
     private final Charset                   _charset;
     private final Map<String, String>       _headers;
     private final Map<String, List<String>> _params;
+    private final List<ByteBuf>             _bodyParts;
+
+    private boolean                         _lastBody = false;
 
     NettyHttpRequest(final HttpRequest request) {
         ArgumentChecker.required(request, "request");
@@ -79,6 +81,15 @@ public class NettyHttpRequest implements IHttpRequest {
                         .first(CharsetUtil.UTF_8);
             }
         }
+
+        String strContentLen = httpHeaders.get(HttpHeaderNames.CONTENT_LENGTH);
+        if (strContentLen == null) {
+            this._contentLength = DEFAULT_CONTENT_LENGTH;
+        } else {
+            this._contentLength = Integer.parseInt(strContentLen);
+        }
+
+        this._bodyParts = new ArrayList<>();
     }
 
     @Override
@@ -117,6 +128,11 @@ public class NettyHttpRequest implements IHttpRequest {
     }
 
     @Override
+    public int contentLength() {
+        return this._contentLength;
+    }
+
+    @Override
     public Charset charset() {
         return this._charset;
     }
@@ -124,6 +140,12 @@ public class NettyHttpRequest implements IHttpRequest {
     @Override
     public Iterator<Map.Entry<String, String>> headers() {
         return this._headers.entrySet().iterator();
+    }
+
+    @Override
+    public boolean hasHeader(final String key) {
+        ArgumentChecker.required(key, "key");
+        return this._headers.containsKey(key);
     }
 
     @Override
@@ -138,9 +160,25 @@ public class NettyHttpRequest implements IHttpRequest {
     }
 
     @Override
+    public boolean hasParam(final String key) {
+        ArgumentChecker.required(key, "key");
+        return this._params.containsKey(key);
+    }
+
+    @Override
     public List<String> param(final String key) {
         ArgumentChecker.required(key, "key");
         return this._params.get(key);
+    }
+
+    public void appendBody(HttpContent httpContent) {
+        ByteBuf buffer = httpContent.content();
+        if (buffer.isReadable()) {
+            this._bodyParts.add(buffer);
+        }
+        if (httpContent instanceof LastHttpContent) {
+            this._lastBody = true;
+        }
     }
 
     @Override
