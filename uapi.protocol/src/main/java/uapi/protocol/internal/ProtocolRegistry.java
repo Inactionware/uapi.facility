@@ -16,6 +16,7 @@ import uapi.protocol.IProtocol;
 import uapi.protocol.IProtocolRegistry;
 import uapi.rx.Looper;
 import uapi.service.annotation.Inject;
+import uapi.service.annotation.Optional;
 import uapi.service.annotation.Service;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class ProtocolRegistry implements IProtocolRegistry {
     protected ILogger _logger;
 
     @Inject
+    @Optional
     protected Map<String, IProtocol> _protocols;
 
     @Override
