@@ -9,28 +9,31 @@
 
 package uapi.protocol.internal;
 
+import uapi.GeneralException;
 import uapi.common.ArgumentChecker;
 import uapi.log.ILogger;
 import uapi.net.INetEvent;
 import uapi.protocol.IProtocol;
 import uapi.protocol.IProtocolRegistry;
 import uapi.rx.Looper;
+import uapi.service.IServiceLifecycle;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.Optional;
 import uapi.service.annotation.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service(IProtocolRegistry.class)
-public class ProtocolRegistry implements IProtocolRegistry {
+public class ProtocolRegistry implements IProtocolRegistry, IServiceLifecycle {
 
     @Inject
     protected ILogger _logger;
 
     @Inject
     @Optional
-    protected Map<String, IProtocol> _protocols;
+    protected Map<String, IProtocol> _protocols = new HashMap<>();
 
     @Override
     public IProtocol find(INetEvent event) {
@@ -49,5 +52,26 @@ public class ProtocolRegistry implements IProtocolRegistry {
         }
 
         return protocols.get(0);
+    }
+
+    @Override
+    public void onActivate() {
+        // do nothing
+    }
+
+    @Override
+    public void onDeactivate() {
+        // do nothing
+    }
+
+    @Override
+    public void onDependencyInject(String serviceId, Object service) {
+        if (IProtocol.class.getCanonicalName().equals(serviceId) && service instanceof IProtocol) {
+            IProtocol proto = (IProtocol) service;
+            this._protocols.put(proto.getId(), proto);
+        } else {
+            throw new GeneralException(
+                    "Unsupported dependency injection - {}, {}", service, service.getClass().getCanonicalName());
+        }
     }
 }

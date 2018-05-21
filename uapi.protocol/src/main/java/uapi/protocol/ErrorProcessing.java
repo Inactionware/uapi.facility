@@ -9,11 +9,14 @@
 
 package uapi.protocol;
 
+import uapi.GeneralException;
 import uapi.behavior.ActionIdentify;
 import uapi.behavior.BehaviorFailure;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
 import uapi.common.ArgumentChecker;
+import uapi.net.http.HttpEvent;
+import uapi.net.http.HttpStatus;
 import uapi.service.annotation.Service;
 
 @Service
@@ -29,16 +32,24 @@ public class ErrorProcessing {
         ArgumentChecker.required(failure, "failure");
 
         Exception exception = failure.cause();
-        ResourceProcessing processing = (ResourceProcessing) failure.failureInput();
-        IProtocolEncoder encoder = processing.encoder();
-        if (encoder == null) {
-            throw ProtocolException.builder()
-                    .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)
-                    .variables(processing.originalRequest())
-                    .build();
+        Object failureInput = failure.failureInput();
+        if (failureInput instanceof ResourceProcessing) {
+            ResourceProcessing processing = (ResourceProcessing) failure.failureInput();
+            IProtocolEncoder encoder = processing.encoder();
+            if (encoder == null) {
+                throw ProtocolException.builder()
+                        .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)
+                        .variables(processing.originalRequest())
+                        .build();
+            }
+            processing = encoder.encodeError(exception, processing);
+            processing.originalResponse().flush();
+        } else if (failureInput instanceof HttpEvent) {
+            HttpEvent httpEvent = (HttpEvent) failureInput;
+            httpEvent.response().setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            httpEvent.response().flush();
+        } else {
+            throw new GeneralException("Unsupported failure input - {}", failureInput.getClass().getCanonicalName());
         }
-
-        processing = encoder.encodeError(exception, processing);
-        processing.originalResponse().flush();
     }
 }

@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import uapi.common.ArgumentChecker;
+import uapi.common.StringHelper;
 import uapi.net.http.*;
 import uapi.net.http.HttpMethod;
 import uapi.net.http.HttpVersion;
@@ -59,10 +60,10 @@ public class NettyHttpRequest implements IHttpRequest {
         this._headers = new HashMap<>();
         io.netty.handler.codec.http.HttpHeaders httpHeaders = request.headers();
         Looper.on(httpHeaders.iteratorAsString())
-                .foreach(entry -> this._headers.put(entry.getKey(), entry.getValue()));
+                .foreach(entry -> this._headers.put(entry.getKey().toLowerCase(), entry.getValue()));
 
         // Decode http content type and charset
-        String strContentType = this._headers.get(HttpHeaderNames.CONTENT_TYPE.toString());
+        String strContentType = this._headers.get(HttpHeaderNames.CONTENT_TYPE.toString().toLowerCase());
         if (strContentType == null) {
             this._contentType = DEFAULT_CONTENT_TYPE;
             this._charset = DEFAULT_CHARSET;
@@ -184,5 +185,11 @@ public class NettyHttpRequest implements IHttpRequest {
     @Override
     public boolean isKeepAlive() {
         return HttpUtil.isKeepAlive(this._nettyHttpReq);
+    }
+
+    @Override
+    public String toString() {
+        return StringHelper.makeString("HTTP Request [version:{}, method:{}, uri:{}]",
+                this._httpVer.name(), this._method, this._uri);
     }
 }
