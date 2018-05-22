@@ -9,10 +9,8 @@
 
 package uapi.net.http;
 
-import uapi.GeneralException;
 import uapi.common.ArgumentChecker;
 import uapi.net.IErrorHandler;
-import uapi.net.IResponse;
 
 public class HttpErrorHandler implements IErrorHandler {
 
@@ -25,11 +23,13 @@ public class HttpErrorHandler implements IErrorHandler {
     }
 
     @Override
-    public void handle(Exception exception) {
-        ArgumentChecker.required(exception, "exception");
+    public void handle(
+            final Throwable t
+    ) {
+        ArgumentChecker.required(t, "t");
 
         this._response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        this._response.write(exception.getMessage());
+        this._response.write(t.getMessage());
         this._response.flush();
     }
 }
