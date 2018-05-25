@@ -38,8 +38,8 @@ public class NettyHttpRequest implements IHttpRequest {
     private final Charset                   _charset;
     private final Map<String, String>       _headers;
     private final Map<String, List<String>> _params;
-    private final List<ByteBuf>             _bodyParts;
 
+    private final List<ByteBuf>             _bodyParts;
     private boolean                         _lastBody = false;
 
     NettyHttpRequest(final HttpRequest request) {
@@ -47,8 +47,8 @@ public class NettyHttpRequest implements IHttpRequest {
         this._nettyHttpReq = request;
 
         // Decode http version and method
-        this._httpVer = HttpVersionConverter.toUapiVersion(request.protocolVersion());
-        this._method = HttpMethodConverter.toUapiVersion(request.method());
+        this._httpVer = ConstantConverter.toUapi(request.protocolVersion());
+        this._method = ConstantConverter.toUapi(request.method());
 
         // Decode request uri
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());

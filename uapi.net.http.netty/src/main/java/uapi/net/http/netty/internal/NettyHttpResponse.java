@@ -83,7 +83,7 @@ public class NettyHttpResponse implements IHttpResponse {
         }
 
         FullHttpMessage response = new DefaultFullHttpResponse(
-                HttpVersionConverter.toNettyVersion(this._version),
+                ConstantConverter.toNetty(this._version),
                 HttpResponseStatus.valueOf(this._status.getCode()),
                 Unpooled.copiedBuffer(this._buffer.toString(), CharsetUtil.UTF_8)
         );
