@@ -1,5 +1,6 @@
 package uapi.net.http.netty.internal;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -10,20 +11,30 @@ import uapi.net.http.HttpEvent;
 import uapi.net.http.HttpException;
 import uapi.net.http.HttpStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class HttpRequestHandler extends ChannelInboundHandlerAdapter {
 
     private final IEventBus _eventBus;
     private final String _eventSource;
 
-    private NettyHttpRequest _request;
-    private NettyHttpResponse _response;
+    private final int _reqBodyBufSize;  // Byte
+
+    private NettyHttpRequestHead _reqHead;
+
+    private boolean _fragmentBody = false;
+    private int _bodySize = 0;
+    private final List<ByteBuf> _bodyBuffer = new ArrayList<>();
 
     HttpRequestHandler(
             final IEventBus eventBus,
-            final String eventSource
+            final String eventSource,
+            final int requestBodyBufferSize
     ) {
         this._eventBus = eventBus;
         this._eventSource = eventSource;
+        this._reqBodyBufSize = requestBodyBufferSize;
     }
 
     @Override
@@ -32,18 +43,48 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
             final Object msg
     ) throws Exception {
         if (msg instanceof HttpRequest) {
-            if (this._request == null) {
-                this._request = new NettyHttpRequest((HttpRequest) msg);
-            }
-            if (this._response == null) {
-                this._response = new NettyHttpResponse(channelCtx, this._request);
+            if (this._reqHead == null) {
+                this._reqHead = new NettyHttpRequestHead((HttpRequest) msg);
             }
         }
 
         if (msg instanceof HttpContent) {
-            this._request.appendBody((HttpContent) msg);
-            HttpEvent httpEvent = new HttpEvent(this._eventSource, this._request, this._response);
-            this._eventBus.fire(httpEvent, (event) -> event.response().close());
+            ByteBuf bodyPart = ((HttpContent) msg).content();
+            if (bodyPart.readableBytes() == 0) {
+                // empty body, do nothing
+            } else if (this._bodySize + bodyPart.readableBytes() <= this._reqBodyBufSize) {
+                this._bodyBuffer.add(bodyPart);
+                this._bodySize += bodyPart.readableBytes();
+            } else {
+                NettyHttpRequestBody body = new NettyHttpRequestBodyFragment(
+                        this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
+                NettyHttpRequest request = new NettyHttpRequest(this._reqHead, body);
+                NettyHttpResponse response = new NettyHttpResponse(channelCtx, this._reqHead);
+                HttpEvent httpEvent = new HttpEvent(this._eventSource, request, response);
+                this._eventBus.fire(httpEvent);
+                this._fragmentBody = true;
+
+                this._bodyBuffer.clear();
+                this._bodyBuffer.add(bodyPart);
+                this._bodySize = bodyPart.readableBytes();
+            }
+
+            if (msg instanceof LastHttpContent) {
+                NettyHttpRequestBody body;
+                if (this._fragmentBody) {
+                    body = new NettyHttpRequestBodyFragment(
+                            this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
+                } else {
+                    body = new NettyHttpRequestBody(
+                            this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
+                }
+                NettyHttpRequest request = new NettyHttpRequest(this._reqHead, body);
+                NettyHttpResponse response = new NettyHttpResponse(channelCtx, this._reqHead);
+                HttpEvent httpEvent = new HttpEvent(this._eventSource, request, response);
+                this._eventBus.fire(httpEvent, (event) -> event.response().close());
+                this._bodyBuffer.clear();
+                this._bodySize = 0;
+            }
         }
     }
 

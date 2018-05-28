@@ -9,187 +9,125 @@
 
 package uapi.net.http.netty.internal;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
 import uapi.common.ArgumentChecker;
 import uapi.common.StringHelper;
 import uapi.net.http.*;
 import uapi.net.http.HttpMethod;
 import uapi.net.http.HttpVersion;
-import uapi.rx.Looper;
 
 import java.nio.charset.Charset;
 import java.util.*;
 
 public class NettyHttpRequest implements IHttpRequest {
 
-    private static final ContentType DEFAULT_CONTENT_TYPE   = ContentType.TEXT;
-    private static final Charset DEFAULT_CHARSET            = CharsetUtil.UTF_8;
-    private static final int DEFAULT_CONTENT_LENGTH         = 0;
+    private final NettyHttpRequestHead _head;
+    private final IHttpRequestBody _body;
 
-    private final HttpRequest               _nettyHttpReq;
-    private final HttpVersion               _httpVer;
-    private final HttpMethod                _method;
-    private final String                    _uri;
-    private final String                    _path;
-    private final ContentType               _contentType;
-    private final int                       _contentLength;
-    private final Charset                   _charset;
-    private final Map<String, String>       _headers;
-    private final Map<String, List<String>> _params;
+    NettyHttpRequest(final NettyHttpRequestHead head) {
+        this(head, null);
+    }
 
-    private final List<ByteBuf>             _bodyParts;
-    private boolean                         _lastBody = false;
-
-    NettyHttpRequest(final HttpRequest request) {
-        ArgumentChecker.required(request, "request");
-        this._nettyHttpReq = request;
-
-        // Decode http version and method
-        this._httpVer = ConstantConverter.toUapi(request.protocolVersion());
-        this._method = ConstantConverter.toUapi(request.method());
-
-        // Decode request uri
-        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
-        this._uri = queryStringDecoder.uri();
-        this._params = queryStringDecoder.parameters();
-        this._path = queryStringDecoder.path();
-
-        // Decode http headers
-        this._headers = new HashMap<>();
-        io.netty.handler.codec.http.HttpHeaders httpHeaders = request.headers();
-        Looper.on(httpHeaders.iteratorAsString())
-                .foreach(entry -> this._headers.put(entry.getKey().toLowerCase(), entry.getValue()));
-
-        // Decode http content type and charset
-        String strContentType = this._headers.get(HttpHeaderNames.CONTENT_TYPE.toString().toLowerCase());
-        if (strContentType == null) {
-            this._contentType = DEFAULT_CONTENT_TYPE;
-            this._charset = DEFAULT_CHARSET;
-        } else {
-            String[] contentTypeInfo = strContentType.split(";");
-            this._contentType = ContentType.parse(contentTypeInfo[0].trim());
-            if (contentTypeInfo.length == 1) {
-                this._charset = DEFAULT_CHARSET;
-            } else {
-                this._charset = Looper.on(contentTypeInfo)
-                        .map(info -> info.split("="))
-                        .filter(kv -> kv.length == 2)
-                        .filter(kv -> "charset".equalsIgnoreCase(kv[0].trim()))
-                        .map(kv -> kv[1].trim())
-                        .map(Charset::forName)
-                        .first(CharsetUtil.UTF_8);
-            }
-        }
-
-        String strContentLen = httpHeaders.get(HttpHeaderNames.CONTENT_LENGTH);
-        if (strContentLen == null) {
-            this._contentLength = DEFAULT_CONTENT_LENGTH;
-        } else {
-            this._contentLength = Integer.parseInt(strContentLen);
-        }
-
-        this._bodyParts = new ArrayList<>();
+    NettyHttpRequest(
+            final NettyHttpRequestHead head,
+            final IHttpRequestBody body
+    ) {
+        ArgumentChecker.required(head, "head");
+        this._head = head;
+        this._body = body;
     }
 
     @Override
     public String peerAddress() {
-        return null;
+        return this._head.peerAddress();
     }
 
     @Override
     public int peerPort() {
-        return 0;
+        return this._head.peerPort();
     }
 
     @Override
     public HttpVersion version() {
-        return this._httpVer;
+        return this._head.version();
     }
 
     @Override
     public HttpMethod method() {
-        return this._method;
+        return this._head.method();
     }
 
     @Override
     public String uri() {
-        return this._uri;
+        return this._head.uri();
     }
 
     @Override
     public String path() {
-        return this._path;
+        return this._head.path();
     }
 
     @Override
     public ContentType contentType() {
-        return this._contentType;
+        return this._head.contentType();
     }
 
     @Override
     public int contentLength() {
-        return this._contentLength;
+        return this._head.contentLength();
     }
 
     @Override
     public Charset charset() {
-        return this._charset;
+        return this._head.charset();
     }
 
     @Override
     public Iterator<Map.Entry<String, String>> headers() {
-        return this._headers.entrySet().iterator();
+        return this._head.headers();
     }
 
     @Override
     public boolean hasHeader(final String key) {
         ArgumentChecker.required(key, "key");
-        return this._headers.containsKey(key);
+        return this._head.hasHeader(key);
     }
 
     @Override
     public String header(final String key) {
         ArgumentChecker.required(key, "key");
-        return this._headers.get(key);
+        return this._head.header(key);
     }
 
     @Override
     public Iterator<Map.Entry<String, List<String>>> params() {
-        return this._params.entrySet().iterator();
+        return this._head.params();
     }
 
     @Override
     public boolean hasParam(final String key) {
         ArgumentChecker.required(key, "key");
-        return this._params.containsKey(key);
+        return this._head.hasParam(key);
     }
 
     @Override
     public List<String> param(final String key) {
         ArgumentChecker.required(key, "key");
-        return this._params.get(key);
-    }
-
-    public void appendBody(HttpContent httpContent) {
-        ByteBuf buffer = httpContent.content();
-        if (buffer.isReadable()) {
-            this._bodyParts.add(buffer);
-        }
-        if (httpContent instanceof LastHttpContent) {
-            this._lastBody = true;
-        }
+        return this._head.param(key);
     }
 
     @Override
     public boolean isKeepAlive() {
-        return HttpUtil.isKeepAlive(this._nettyHttpReq);
+        return this._head.isKeepAlive();
+    }
+
+    @Override
+    public IHttpRequestBody body() {
+        return this._body;
     }
 
     @Override
     public String toString() {
         return StringHelper.makeString("HTTP Request [version:{}, method:{}, uri:{}]",
-                this._httpVer.name(), this._method, this._uri);
+                this._head.version().name(), this._head.method(), this._head.uri());
     }
 }

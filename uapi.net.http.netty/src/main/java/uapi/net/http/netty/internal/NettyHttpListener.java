@@ -16,6 +16,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
+import uapi.config.annotation.Config;
 import uapi.event.IEventBus;
 import uapi.log.ILogger;
 import uapi.net.NetException;
@@ -35,8 +36,15 @@ import uapi.state.StateCreator;
         value = IHttpListener.class)
 public class NettyHttpListener implements IHttpListener {
 
+    private static final int DEFAULT_BODY_BUFFER_SIZE   = 512; // KB
+
     private static final String OP_START_UP         = "startUp";
     private static final String OP_SHUT_DOWN        = "shutDown";
+
+    @Config(
+            path = "http.request.body-buffer-size",
+            optional = true)
+    protected int _reqBodyBufSize = DEFAULT_BODY_BUFFER_SIZE * 1024;
 
     @Attribute(HttpAttributes.HOST)
     protected String _host;
@@ -151,7 +159,10 @@ public class NettyHttpListener implements IHttpListener {
         protected void initChannel(SocketChannel channel) throws Exception {
             channel.pipeline().addLast(new HttpServerCodec());
             channel.pipeline().addLast(
-                    new HttpRequestHandler(NettyHttpListener.this._eventBus, NettyHttpListener.this._eventSrc));
+                    new HttpRequestHandler(
+                            NettyHttpListener.this._eventBus,
+                            NettyHttpListener.this._eventSrc,
+                            NettyHttpListener.this._reqBodyBufSize));
         }
     }
 }

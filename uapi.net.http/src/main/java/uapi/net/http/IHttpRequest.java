@@ -45,4 +45,6 @@ public interface IHttpRequest extends IRequest {
     List<String> param(String key);
 
     boolean isKeepAlive();
+
+    IHttpRequestBody body();
 }

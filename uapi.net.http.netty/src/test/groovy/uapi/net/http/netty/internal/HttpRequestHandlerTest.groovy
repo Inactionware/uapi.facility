@@ -11,9 +11,11 @@ package uapi.net.http.netty.internal
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.HttpRequest
+import spock.lang.Ignore
 import spock.lang.Specification
 import uapi.event.IEventBus
 
+@Ignore
 class HttpRequestHandlerTest extends Specification {
 
     def 'test crate instance'() {
@@ -32,6 +34,9 @@ class HttpRequestHandlerTest extends Specification {
 
         when:
         handler.channelRead(ctx, msg)
+
+        then:
+        noExceptionThrown()
 
     }
 }
