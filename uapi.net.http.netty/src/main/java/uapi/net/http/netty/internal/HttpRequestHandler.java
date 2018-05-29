@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import uapi.common.Capacity;
 import uapi.event.IEventBus;
 import uapi.net.http.HttpEvent;
 import uapi.net.http.HttpException;
@@ -19,7 +20,7 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
     private final IEventBus _eventBus;
     private final String _eventSource;
 
-    private final int _reqBodyBufSize;  // Byte
+    private final Capacity _reqBodyBufSize;
 
     private NettyHttpRequestHead _reqHead;
 
@@ -30,7 +31,7 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
     HttpRequestHandler(
             final IEventBus eventBus,
             final String eventSource,
-            final int requestBodyBufferSize
+            final Capacity requestBodyBufferSize
     ) {
         this._eventBus = eventBus;
         this._eventSource = eventSource;
@@ -52,7 +53,7 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
             ByteBuf bodyPart = ((HttpContent) msg).content();
             if (bodyPart.readableBytes() == 0) {
                 // empty body, do nothing
-            } else if (this._bodySize + bodyPart.readableBytes() <= this._reqBodyBufSize) {
+            } else if (this._bodySize + bodyPart.readableBytes() <= this._reqBodyBufSize.toByteVolume()) {
                 this._bodyBuffer.add(bodyPart);
                 this._bodySize += bodyPart.readableBytes();
             } else {

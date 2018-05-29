@@ -13,7 +13,8 @@ plugins {
 
 dependencies {
     compileOnly (
-            "uapi:uapi.service.apt:${uapi_cornerstone_version}"
+            "uapi:uapi.service.apt:${uapi_cornerstone_version}",
+            "uapi:uapi.config.apt:${uapi_cornerstone_version}"
     )
 
     compile (
