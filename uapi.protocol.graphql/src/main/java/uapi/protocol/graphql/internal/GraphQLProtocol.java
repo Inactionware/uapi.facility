@@ -24,8 +24,8 @@ public class GraphQLProtocol implements IProtocol {
 
     private static final String TYPE    = "GraphQL";
 
-    private final GraphQLJsonDecoder _decoder = new GraphQLJsonDecoder();
-    private final GraphQLJsonEncoder _encoder = new GraphQLJsonEncoder();
+    private final GraphQLDecoder _decoder = new GraphQLDecoder();
+    private final GraphQLEncoder _encoder = new GraphQLEncoder();
 
     @Override
     public String type() {

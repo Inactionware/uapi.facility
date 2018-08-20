@@ -11,9 +11,7 @@ package uapi.protocol;
 
 import uapi.common.ArgumentChecker;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class ResourceOperation {
 
@@ -21,6 +19,7 @@ public class ResourceOperation {
     private final String _resId;
     private final int _opType;
     private final Map<String, Object> _params;
+    private final List<ResourceOperation> _subResOpts;
 
     public ResourceOperation(
             final String resourceType,
@@ -33,6 +32,7 @@ public class ResourceOperation {
         this._resId = resourceId;
         this._opType = operationType;
         this._params = new HashMap<>();
+        this._subResOpts = new LinkedList<>();
     }
 
     public void addParameter(
@@ -42,6 +42,14 @@ public class ResourceOperation {
         ArgumentChecker.required(key, "key");
 
         this._params.put(key, value);
+    }
+
+    public void addSubOperation(
+            final ResourceOperation resourceOperation
+    ) {
+        ArgumentChecker.required(resourceOperation, "resourceOperation");
+
+        this._subResOpts.add(resourceOperation);
     }
 
     public Iterator<Map.Entry<String,Object>> parameterIterator() {
@@ -60,5 +68,11 @@ public class ResourceOperation {
         return this._opType;
     }
 
+    public boolean hasSubOperation() {
+        return ! this._subResOpts.isEmpty();
+    }
 
+    public List<ResourceOperation> subOperations() {
+        return Collections.unmodifiableList(this._subResOpts);
+    }
 }
