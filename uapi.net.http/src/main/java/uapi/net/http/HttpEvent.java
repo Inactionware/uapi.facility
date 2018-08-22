@@ -22,7 +22,6 @@ public class HttpEvent extends BehaviorEvent implements INetEvent {
 
     private final IHttpRequest _request;
     private final IHttpResponse _response;
-//    private final HttpErrorHandler _errHandler;
 
     public HttpEvent(
             final String sourceName,
@@ -36,7 +35,6 @@ public class HttpEvent extends BehaviorEvent implements INetEvent {
 
         this._request = request;
         this._response = response;
-//        this._errHandler = new HttpErrorHandler(this._response);
     }
 
     @Override
@@ -53,11 +51,6 @@ public class HttpEvent extends BehaviorEvent implements INetEvent {
     public IHttpResponse response() {
         return this._response;
     }
-
-//    @Override
-//    public IErrorHandler errorHandler() {
-//        return this._errHandler;
-//    }
 
     @Override
     public String toString() {

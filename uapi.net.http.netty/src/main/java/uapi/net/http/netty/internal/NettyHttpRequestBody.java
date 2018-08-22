@@ -12,36 +12,39 @@ package uapi.net.http.netty.internal;
 import io.netty.buffer.ByteBuf;
 import uapi.net.http.IHttpRequestBody;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
 public class NettyHttpRequestBody implements IHttpRequestBody {
 
-    private ByteBuf[] _bodyParts;
+    private byte[] _bodyBytes;
 
     NettyHttpRequestBody(ByteBuf... buffers) {
-        this._bodyParts = buffers;
+        for (ByteBuf bodyPart : buffers) {
+            int len = bodyPart.readableBytes();
+            byte[] arr = new byte[len];
+            bodyPart.readBytes(arr);
+            if (this._bodyBytes == null) {
+                this._bodyBytes = arr;
+            } else {
+                this._bodyBytes = Arrays.copyOf(this._bodyBytes, this._bodyBytes.length + arr.length);
+                System.arraycopy(arr, 0, this._bodyBytes, this._bodyBytes.length - 1, arr.length);
+            }
+        }
     }
 
     @Override
     public String getString(String encoder) {
-        return null;
+        return new String(this._bodyBytes, Charset.forName(encoder));
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];
+        return this._bodyBytes;
     }
 
     @Override
     public int size() {
-        return 0;
+        return this._bodyBytes.length;
     }
-
-//    public void appendBody(ByteBuf... buffers) {
-//        ByteBuf buffer = httpContent.content();
-//        if (buffer.isReadable()) {
-//            this._bodyParts.add(buffer);
-//        }
-//        if (httpContent instanceof LastHttpContent) {
-//            this._lastBody = true;
-//        }
-//    }
 }
