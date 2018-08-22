@@ -9,6 +9,7 @@
 
 package uapi.protocol;
 
+import uapi.behavior.ActionIdentify;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
 import uapi.common.ArgumentChecker;
@@ -19,6 +20,8 @@ import uapi.service.annotation.Service;
 @Service
 @Action
 public class InitProcessing {
+
+    public static final ActionIdentify actionId = ActionIdentify.toActionId(InitProcessing.class);
 
     @Inject
     protected IProtocolRegistry _protoReg;

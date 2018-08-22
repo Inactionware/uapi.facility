@@ -9,6 +9,7 @@
 
 package uapi.protocol;
 
+import uapi.behavior.ActionIdentify;
 import uapi.behavior.annotation.Action;
 import uapi.behavior.annotation.ActionDo;
 import uapi.common.ArgumentChecker;
@@ -17,6 +18,8 @@ import uapi.service.annotation.Service;
 @Service
 @Action
 public class EncodeProtocol {
+
+    public static final ActionIdentify actionId = ActionIdentify.toActionId(EncodeProtocol.class);
 
     @ActionDo
     public ResourceProcessing encode(

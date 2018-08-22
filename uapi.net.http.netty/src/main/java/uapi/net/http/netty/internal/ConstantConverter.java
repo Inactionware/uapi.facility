@@ -13,10 +13,48 @@ import uapi.common.ArgumentChecker;
 import uapi.net.http.HttpErrors;
 import uapi.net.http.HttpException;
 import uapi.net.http.HttpMethod;
+import uapi.net.http.HttpVersion;
 
-public class HttpMethodConverter {
+public class ConstantConverter {
 
-    public static io.netty.handler.codec.http.HttpMethod toNettyVersion(
+    /* Convert HTTP version */
+
+    public static io.netty.handler.codec.http.HttpVersion toNetty(
+            final HttpVersion httpVersion
+    ) {
+        ArgumentChecker.required(httpVersion, "httpVersion");
+        switch (httpVersion) {
+            case V_1_0:
+                return io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
+            case V_1_1:
+                return io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+            default:
+                throw HttpException.builder()
+                        .errorCode(HttpErrors.UNSUPPORTED_HTTP_VERSION)
+                        .variables(httpVersion.name())
+                        .build();
+        }
+    }
+
+    public static HttpVersion toUapi(
+            final io.netty.handler.codec.http.HttpVersion nettyHttpVersion
+    ) {
+        ArgumentChecker.required(nettyHttpVersion, "nettyHttpVersion");
+        if (io.netty.handler.codec.http.HttpVersion.HTTP_1_0.equals(nettyHttpVersion)) {
+            return HttpVersion.V_1_0;
+        } else if (io.netty.handler.codec.http.HttpVersion.HTTP_1_1.equals(nettyHttpVersion)) {
+            return HttpVersion.V_1_1;
+        } else {
+            throw HttpException.builder()
+                    .errorCode(HttpErrors.UNSUPPORTED_HTTP_VERSION)
+                    .variables(nettyHttpVersion.text())
+                    .build();
+        }
+    }
+
+    /* Convert HTTP request method */
+
+    public static io.netty.handler.codec.http.HttpMethod toNetty(
             final HttpMethod httpMethod
     ) {
         ArgumentChecker.required(httpMethod, "httpMethod");
@@ -33,13 +71,13 @@ public class HttpMethodConverter {
                 return io.netty.handler.codec.http.HttpMethod.DELETE;
             default:
                 throw HttpException.builder()
-                    .errorCode(HttpErrors.UNSUPPORTED_HTTP_METHOD)
-                    .variables(httpMethod.name())
-                    .build();
+                        .errorCode(HttpErrors.UNSUPPORTED_HTTP_METHOD)
+                        .variables(httpMethod.name())
+                        .build();
         }
     }
 
-    public static HttpMethod toUapiVersion(
+    public static HttpMethod toUapi(
             final io.netty.handler.codec.http.HttpMethod nettyHttpMethod
     ) {
         if (io.netty.handler.codec.http.HttpMethod.GET.equals(nettyHttpMethod)) {
@@ -60,5 +98,5 @@ public class HttpMethodConverter {
         }
     }
 
-    private HttpMethodConverter() { }
+    private ConstantConverter() { }
 }

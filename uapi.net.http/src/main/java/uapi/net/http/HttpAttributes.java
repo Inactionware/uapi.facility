@@ -15,5 +15,7 @@ public class HttpAttributes extends NetListenerAttributes {
 
     public static final String TYPE     = "HTTP";
 
+    public static final String EVENT_SOURCE = "EventSource";
+
     private HttpAttributes() { }
 }

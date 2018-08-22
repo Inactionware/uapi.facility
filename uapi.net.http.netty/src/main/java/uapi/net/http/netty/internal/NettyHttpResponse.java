@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NettyHttpResponse implements IHttpResponse {
 
     private final ChannelHandlerContext _ctx;
-    private final NettyHttpRequest      _nettyHttpReq;
+    private final NettyHttpRequestHead  _reqHead;
 
     private HttpStatus _status;
     private HttpVersion _version;
@@ -37,14 +37,14 @@ public class NettyHttpResponse implements IHttpResponse {
 
     public NettyHttpResponse(
             final ChannelHandlerContext context,
-            final NettyHttpRequest request
+            final NettyHttpRequestHead requestHead
     ) {
         ArgumentChecker.required(context, "context");
-        ArgumentChecker.required(request, "request");
+        ArgumentChecker.required(requestHead, "requestHead");
 
         this._ctx = context;
-        this._nettyHttpReq = request;
-        this._version = request.version();
+        this._reqHead = requestHead;
+        this._version = requestHead.version();
         this._status = HttpStatus.OK;
         this._headers = new HashMap<>();
         this._buffer = new StringBuilder();
@@ -83,12 +83,12 @@ public class NettyHttpResponse implements IHttpResponse {
         }
 
         FullHttpMessage response = new DefaultFullHttpResponse(
-                HttpVersionConverter.toNettyVersion(this._version),
+                ConstantConverter.toNetty(this._version),
                 HttpResponseStatus.valueOf(this._status.getCode()),
                 Unpooled.copiedBuffer(this._buffer.toString(), CharsetUtil.UTF_8)
         );
 
-        if (this._nettyHttpReq.isKeepAlive()) {
+        if (this._reqHead.isKeepAlive()) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
         Looper.on(this._headers.entrySet())
@@ -100,5 +100,14 @@ public class NettyHttpResponse implements IHttpResponse {
 
         this._ctx.writeAndFlush(response);
         this._flashed.set(true);
+    }
+
+    @Override
+    public void close() {
+        if (! this._flashed.get()) {
+            flush();
+        }
+
+        this._ctx.close();
     }
 }

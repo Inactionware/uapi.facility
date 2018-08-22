@@ -20,4 +20,8 @@ public interface IHttpResponse extends IResponse {
     void setHeader(String key, String value);
 
     void write(String message);
+
+    void flush();
+
+    void close();
 }

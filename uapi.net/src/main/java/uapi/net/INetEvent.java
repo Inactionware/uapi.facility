@@ -24,5 +24,5 @@ public interface INetEvent extends IEvent {
 
     IResponse response();
 
-    IErrorHandler errorHandler();
+//    IErrorHandler errorHandler();
 }

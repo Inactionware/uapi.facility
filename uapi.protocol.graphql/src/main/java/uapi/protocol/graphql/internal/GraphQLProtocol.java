@@ -10,13 +10,22 @@
 package uapi.protocol.graphql.internal;
 
 import uapi.net.INetEvent;
+import uapi.net.http.ContentType;
+import uapi.net.http.HttpEvent;
+import uapi.net.http.HttpMethod;
+import uapi.net.http.IHttpRequest;
 import uapi.protocol.IProtocol;
 import uapi.protocol.IProtocolDecoder;
 import uapi.protocol.IProtocolEncoder;
+import uapi.service.annotation.Service;
 
+@Service(IProtocol.class)
 public class GraphQLProtocol implements IProtocol {
 
     private static final String TYPE    = "GraphQL";
+
+    private final GraphQLDecoder _decoder = new GraphQLDecoder();
+    private final GraphQLEncoder _encoder = new GraphQLEncoder();
 
     @Override
     public String type() {
@@ -25,16 +34,28 @@ public class GraphQLProtocol implements IProtocol {
 
     @Override
     public boolean isSupport(INetEvent event) {
+        if (! (event instanceof HttpEvent)) {
+            return false;
+        }
+        HttpEvent httpEvent = (HttpEvent) event;
+        IHttpRequest httpReq = httpEvent.request();
+        if (httpReq.method() == HttpMethod.GET && httpReq.hasParam("query")) {
+            return true;
+        }
+        if (httpReq.method() == HttpMethod.POST &&
+                (httpReq.contentType() == ContentType.JSON || httpReq.contentType() == ContentType.GRAPHQL)) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public IProtocolDecoder decoder() {
-        return null;
+        return this._decoder;
     }
 
     @Override
     public IProtocolEncoder encoder() {
-        return null;
+        return this._encoder;
     }
 }

@@ -1,8 +1,9 @@
 Module error category mapping:
-    uapi.web        0x0200
-    uapi.net        0x0201
-    uapi.net.http   0x0202
-    uapi.protocol   0x0210
+    uapi.web                0x0200
+    uapi.net                0x0201
+    uapi.net.http           0x0202
+    uapi.protocol           0x0210
+    uapi.protocol.graphql   0x0211
 
 Copyright text:
     Copyright (c) $today.year. The UAPI Authors

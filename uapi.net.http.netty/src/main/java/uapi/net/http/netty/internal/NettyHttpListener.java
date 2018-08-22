@@ -16,11 +16,16 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import uapi.GeneralException;
+import uapi.common.Capacity;
+import uapi.config.annotation.Config;
+import uapi.event.IEventBus;
+import uapi.log.ILogger;
 import uapi.net.NetException;
 import uapi.net.http.HttpAttributes;
 import uapi.net.http.IHttpListener;
 import uapi.service.ServiceType;
 import uapi.service.annotation.Attribute;
+import uapi.service.annotation.Inject;
 import uapi.service.annotation.Service;
 import uapi.state.IChecker;
 import uapi.state.IShifter;
@@ -32,14 +37,30 @@ import uapi.state.StateCreator;
         value = IHttpListener.class)
 public class NettyHttpListener implements IHttpListener {
 
+    private static final Capacity DEFAULT_BODY_BUFFER_SIZE   = Capacity.parse("512KB");
+
     private static final String OP_START_UP         = "startUp";
     private static final String OP_SHUT_DOWN        = "shutDown";
+
+    @Config(
+            path = "http.request.body-buffer-size",
+            optional = true)
+    protected Capacity _reqBodyBufSize = DEFAULT_BODY_BUFFER_SIZE;
 
     @Attribute(HttpAttributes.HOST)
     protected String _host;
 
     @Attribute(HttpAttributes.PORT)
     protected int _port;
+
+    @Attribute(HttpAttributes.EVENT_SOURCE)
+    protected String _eventSrc;
+
+    @Inject
+    protected ILogger _logger;
+
+    @Inject
+    protected IEventBus _eventBus;
 
     private EventLoopGroup _bossGroup;
     private EventLoopGroup _workerGroup;
@@ -103,13 +124,8 @@ public class NettyHttpListener implements IHttpListener {
         ServerBootstrap svcBootstrap = new ServerBootstrap();
         svcBootstrap.group(this._bossGroup, this._workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel channel) {
-                        channel.pipeline().addLast(new HttpServerCodec());
-                        channel.pipeline().addLast(new HttpRequestHandler());
-                    }
-                }).option(ChannelOption.SO_BACKLOG, 28)
+                .childHandler(new HttpChannelInitializer())
+                .option(ChannelOption.SO_BACKLOG, 28)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         try {
             this._channelFuture = svcBootstrap.bind(this._host, this._port).sync();
@@ -117,6 +133,7 @@ public class NettyHttpListener implements IHttpListener {
             innerShutDown();
             throw NetException.builder().cause(ex).build();
         }
+        this._logger.info("Http listener listen on {}:{}", this._host, this._port);
     }
 
     private void innerShutDown() throws NetException {
@@ -133,6 +150,20 @@ public class NettyHttpListener implements IHttpListener {
             }
         } catch (InterruptedException ex) {
             // do nothing
+        }
+        this._logger.info("Http listener stop listen on {}:{}", this._host, this._port);
+    }
+
+    private final class HttpChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+        @Override
+        protected void initChannel(SocketChannel channel) throws Exception {
+            channel.pipeline().addLast(new HttpServerCodec());
+            channel.pipeline().addLast(
+                    new HttpRequestHandler(
+                            NettyHttpListener.this._eventBus,
+                            NettyHttpListener.this._eventSrc,
+                            NettyHttpListener.this._reqBodyBufSize));
         }
     }
 }

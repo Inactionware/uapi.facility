@@ -48,7 +48,7 @@ public class ProtocolErrors extends FileBasedExceptionErrors<ProtocolException> 
 
     /**
      * Error string template:
-     *      There is not protocol for request - {}
+     *      There is no protocol for request - {}
      */
     public static final class ProtocolNotFound extends IndexedParameters<ProtocolNotFound> {
 

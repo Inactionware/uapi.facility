@@ -28,15 +28,23 @@ public interface IHttpRequest extends IRequest {
 
     ContentType contentType();
 
+    int contentLength();
+
     Charset charset();
 
     Iterator<Map.Entry<String, String>> headers();
+
+    boolean hasHeader(String key);
 
     String header(String key);
 
     Iterator<Map.Entry<String, List<String>>> params();
 
+    boolean hasParam(String key);
+
     List<String> param(String key);
 
     boolean isKeepAlive();
+
+    IHttpRequestBody body();
 }
