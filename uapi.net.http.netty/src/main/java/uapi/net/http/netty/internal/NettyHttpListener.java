@@ -15,13 +15,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
-import uapi.GeneralException;
 import uapi.common.Capacity;
 import uapi.config.annotation.Config;
 import uapi.event.IEventBus;
 import uapi.log.ILogger;
 import uapi.net.NetException;
 import uapi.net.http.HttpAttributes;
+import uapi.net.http.HttpErrors;
+import uapi.net.http.HttpException;
 import uapi.net.http.IHttpListener;
 import uapi.service.ServiceType;
 import uapi.service.annotation.Attribute;
@@ -85,7 +86,14 @@ public class NettyHttpListener implements IHttpListener {
                     }
                     break;
                 default:
-                    throw new GeneralException();
+                    throw HttpException.builder()
+                            .errorCode(HttpErrors.ILLEGAL_LISTENER_STATE_SWITCH)
+                            .variables(new HttpErrors.IllegalListenerStateSwitch()
+                                    .fromState(currentState.name())
+                                    .operation(operation.type())
+                                    .host(this._host)
+                                    .port(this._port))
+                            .build();
             }
             return temporaryState;
         };
@@ -101,7 +109,14 @@ public class NettyHttpListener implements IHttpListener {
                     newState = ListenerState.Stopped;
                     break;
                 default:
-                    throw new GeneralException();
+                    throw HttpException.builder()
+                            .errorCode(HttpErrors.ILLEGAL_LISTENER_STATE_SWITCH)
+                            .variables(new HttpErrors.IllegalListenerStateSwitch()
+                                    .fromState(currentState.name())
+                                    .operation(operation.type())
+                                    .host(this._host)
+                                    .port(this._port))
+                            .build();
             }
             return newState;
         };
