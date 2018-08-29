@@ -10,8 +10,9 @@ public class HttpErrors extends FileBasedExceptionErrors<HttpException> {
 
     public static final int CATEGORY    = 0x0202;
 
-    public static final int UNSUPPORTED_HTTP_VERSION    = 1;
-    public static final int UNSUPPORTED_HTTP_METHOD     = 2;
+    public static final int UNSUPPORTED_HTTP_VERSION        = 1;
+    public static final int UNSUPPORTED_HTTP_METHOD         = 2;
+    public static final int ILLEGAL_LISTENER_STATE_SWITCH   = 3;
 
     private static final Map<Integer, String> keyCodeMapping;
 
@@ -19,6 +20,7 @@ public class HttpErrors extends FileBasedExceptionErrors<HttpException> {
         keyCodeMapping = new ConcurrentHashMap<>();
         keyCodeMapping.put(UNSUPPORTED_HTTP_VERSION, UnsupportedHttpVersion.KEY);
         keyCodeMapping.put(UNSUPPORTED_HTTP_METHOD, UnsupportedHttpMethod.KEY);
+        keyCodeMapping.put(ILLEGAL_LISTENER_STATE_SWITCH, IllegalListenerStateSwitch.KEY);
     }
 
     @Override
@@ -93,6 +95,53 @@ public class HttpErrors extends FileBasedExceptionErrors<HttpException> {
         @Override
         public Object[] get() {
             return new Object[] { this._method };
+        }
+    }
+
+    /**
+     * Error string template:
+     *      It is not allowed do operation {} on state {} for listen on {}:{}
+     */
+    public static final class IllegalListenerStateSwitch extends GeneralHttpError<IllegalListenerStateSwitch> {
+
+        private static final String KEY = "IllegalListenerStateSwitch";
+
+        private String _fromState;
+        private String _operation;
+        private String _host;
+        private int _port;
+
+        public IllegalListenerStateSwitch fromState(
+                final String state
+        ) {
+            this._fromState = state;
+            return this;
+        }
+
+        public IllegalListenerStateSwitch operation(
+                final String operation
+        ) {
+            this._operation = operation;
+            return this;
+        }
+
+        public IllegalListenerStateSwitch host(
+                final String host
+        ) {
+            this._host = host;
+            return this;
+        }
+
+        public IllegalListenerStateSwitch port(
+                final int port
+        ) {
+            this._port = port;
+            return this;
+        }
+
+        @Override
+        public Object[] get() {
+            return new Object[] { this._operation, this._fromState, this._host, this._port };
         }
     }
 }
