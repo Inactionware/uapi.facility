@@ -2,6 +2,7 @@ rootProject.name = 'uapi.facility'
 
 include 'uapi.service.spring'
 include 'uapi.net', 'uapi.net.telnet', 'uapi.net.http', 'uapi.net.http.netty'
+include 'uapi.auth', 'uapi.auth.apt'
 include 'uapi.protocol', 'uapi.protocol.graphql'
 include 'uapi.app.terminal'
 include 'uapi.facility.example'
