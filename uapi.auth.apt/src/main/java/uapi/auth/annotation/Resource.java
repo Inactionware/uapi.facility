@@ -7,11 +7,18 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth;
+package uapi.auth.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A uapi.auth.Resource is a manageable unit for authentication framework.
+ * A uapi.auth.annotation.Resource is a manageable unit for authentication framework.
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Resource {
 
     /**
