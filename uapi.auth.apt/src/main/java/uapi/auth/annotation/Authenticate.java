@@ -11,16 +11,15 @@ package uapi.auth.annotation;
 
 import uapi.common.StringHelper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Any Action annotated with Authenticate will make framework check the authentication before action executing
+ * The annotation can be annotated on an Action only which means the Action must be authenticated before executing
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(Authenticates.class)
 public @interface Authenticate {
 
     /**

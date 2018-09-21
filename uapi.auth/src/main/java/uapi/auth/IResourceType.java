@@ -9,10 +9,17 @@
 
 package uapi.auth;
 
+import uapi.IIdentifiable;
+
 /**
  * A resource category
  */
-public interface IResourceType {
+public interface IResourceType extends IIdentifiable<String> {
+
+    @Override
+    default String getId() {
+        return name();
+    }
 
     /**
      * Resource type name
