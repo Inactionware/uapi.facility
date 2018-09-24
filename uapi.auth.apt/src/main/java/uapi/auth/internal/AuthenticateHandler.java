@@ -9,21 +9,32 @@
 
 package uapi.auth.internal;
 
+import com.google.auto.service.AutoService;
+import freemarker.template.Template;
 import uapi.GeneralException;
+import uapi.Type;
+import uapi.auth.PermissionVerifier;
 import uapi.auth.annotation.Authenticate;
 import uapi.auth.annotation.Authenticates;
-import uapi.behavior.IActionHandlerHelper;
+import uapi.behavior.*;
 import uapi.behavior.annotation.Action;
-import uapi.codegen.AnnotationsHandler;
-import uapi.codegen.IBuilderContext;
+import uapi.codegen.*;
+import uapi.common.StringHelper;
 import uapi.rx.Looper;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+@AutoService(IAnnotationsHandler.class)
 public class AuthenticateHandler extends AnnotationsHandler {
+
+    private static final String TEMP_BY         = "template/by_method.ftl";
+    private static final String TEMP_PROCESS    = "template/process_method.ftl";
 
     @SuppressWarnings("unchecked")
     private static final Class<? extends Annotation>[] orderedAnnotations = new Class[] { Authenticates.class };
@@ -55,24 +66,94 @@ public class AuthenticateHandler extends AnnotationsHandler {
             IActionHandlerHelper actionHelper = builderContext.getHelper(IActionHandlerHelper.name);
             IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(classElement);
 
-            implementIInterceptive(builderContext, classElement);
-            createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
+            String interceptorClass = createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
+            implementIInterceptive(builderContext, classElement, interceptorClass);
+
         });
     }
 
     private void implementIInterceptive(
             final IBuilderContext builderContext,
-            final Element classElement
+            final Element classElement,
+            final String interceptorClass
     ) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("interceptorClass", interceptorClass);
+        Template temp = builderContext.loadTemplate(TEMP_BY);
 
+        ClassMeta.Builder classBuilder = builderContext.findClassBuilder(classElement);
+        classBuilder.addImplement(IInterceptive.class)
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PUBLIC)
+                        .setName("by")
+                        .setReturnTypeName(ActionIdentify.class.getTypeName())
+                        .addCodeBuilder(CodeMeta.builder()
+                                .setModel(model)
+                                .setTemplate(temp)));
     }
 
-    private void createInterceptor(
+    private String createInterceptor(
             final IBuilderContext builderContext,
             final Element classElement,
             final Authenticate[] anthenticates,
             final IActionHandlerHelper.ActionMethodMeta actionMethodMeta
     ) {
+        String pkgName = builderContext.packageName(classElement);
+        String clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
+        String ioType = actionMethodMeta.inputType();
 
+        Map<String, Object> model = new HashMap<>();
+        Template temp = builderContext.loadTemplate(TEMP_PROCESS);
+
+        ClassMeta.Builder classBuilder = builderContext.newClassBuilder(pkgName, clsName);
+        classBuilder
+                .addAnnotationBuilder(AnnotationMeta.builder()
+                        .setName(AutoService.class.getCanonicalName())
+                        .addArgument(ArgumentMeta.builder()
+                                .setName("value")
+                                .setValue(IAction.class.getCanonicalName() + ".class")
+                                .setIsString(false)))
+                .addImplement(StringHelper.makeMD5("{}<{}>", IInterceptor.class.getName(), ioType))
+                .setClassName(PermissionVerifier.class.getName())
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PUBLIC)
+                        .setName("inputType")
+                        .setReturnTypeName(ioType)
+                        .addCodeBuilder(CodeMeta.builder()
+                                .addRawCode(StringHelper.makeString("return {}.class;", ioType))))
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PUBLIC)
+                        .setName("isAnonymous")
+                        .setReturnTypeName(Type.BOOLEAN)
+                        .addCodeBuilder(CodeMeta.builder().addRawCode("return false;")))
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PUBLIC)
+                        .setName("getId")
+                        .setReturnTypeName(ActionIdentify.class.getCanonicalName())
+                        .addCodeBuilder(CodeMeta.builder()
+                                .addRawCode(StringHelper.makeString(
+                                        "return uapi.behavior.ActionIdentify.toActionId({});",
+                                        classBuilder.getQualifiedClassName()))))
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PUBLIC)
+                        .setName("process")
+                        .setReturnTypeName(ioType)
+                        .addParameterBuilder(ParameterMeta.builder()
+                                .addModifier(Modifier.FINAL)
+                                .setName("input")
+                                .setType(ioType))
+                        .addParameterBuilder(ParameterMeta.builder()
+                                .addModifier(Modifier.PUBLIC)
+                                .setName("context")
+                                .setType(IExecutionContext.class.getCanonicalName()))
+                        .addCodeBuilder(CodeMeta.builder()
+                                .setModel(model)
+                                .setTemplate(temp)));
+        return classBuilder.getQualifiedClassName();
     }
 }

@@ -9,11 +9,21 @@
 
 package uapi.auth;
 
+import uapi.net.IRequest;
+import uapi.protocol.ResourceProcessing;
+
 public abstract class PermissionVerifier {
 
     protected abstract IPermission[] requiredPermissions();
 
-    protected boolean verify() {
+    protected abstract IResourceTypeManager resourceTypeManager();
+
+    protected boolean verify(
+            final ResourceProcessing resourceProcessing
+    ) {
+        IRequest request = resourceProcessing.originalRequest();
+        String user = request.peer().user();
+
         return false;
     }
 }

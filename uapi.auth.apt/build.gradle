@@ -17,6 +17,7 @@ dependencies {
             "uapi:uapi.exception:${uapi_base_version}",
             "uapi:uapi.codegen:${uapi_base_version}",
             "uapi:uapi.service.apt:${uapi_cornerstone_version}",
+            "uapi:uapi.behavior:${uapi_cornerstone_version}",
             "uapi:uapi.behavior.apt:${uapi_cornerstone_version}",
             project(':uapi.auth')
     )

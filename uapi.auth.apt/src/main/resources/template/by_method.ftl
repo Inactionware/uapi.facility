@@ -1,0 +1,1 @@
+return uapi.behavior.ActionIdentify.toActionId(${interceptorClass});

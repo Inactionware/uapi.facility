@@ -41,5 +41,5 @@ public @interface Authenticate {
      *
      * @return  actions
      */
-    int permission();
+    int requiredActions();
 }

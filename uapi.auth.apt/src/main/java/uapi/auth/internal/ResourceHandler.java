@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@AutoService(IAnnotationsHandler.class)
 public class ResourceHandler extends AnnotationsHandler {
 
     private static final String TEMP_GET_IDS            = "template/getIds_method.ftl";
