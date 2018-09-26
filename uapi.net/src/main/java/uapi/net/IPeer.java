@@ -6,5 +6,5 @@ public interface IPeer {
 
     int port();
 
-    String user();
+//    String user();
 }

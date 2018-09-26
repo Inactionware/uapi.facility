@@ -9,8 +9,16 @@
 
 package uapi.auth;
 
+import uapi.GeneralException;
+import uapi.common.StringHelper;
 import uapi.net.IRequest;
+import uapi.net.ISession;
 import uapi.protocol.ResourceProcessing;
+import uapi.rx.Looper;
+import uapi.user.IUser;
+import uapi.user.internal.Anonymous;
+
+import java.util.List;
 
 public abstract class PermissionVerifier {
 
@@ -22,7 +30,50 @@ public abstract class PermissionVerifier {
             final ResourceProcessing resourceProcessing
     ) {
         IRequest request = resourceProcessing.originalRequest();
-        String user = request.peer().user();
+        ISession session = request.session();
+        IUser user = session.get(SessionKeys.USER);
+        if (user == null) {
+            user = new Anonymous();
+            session.set(SessionKeys.USER, user);
+        }
+        String username = user.name();
+        List<IPermission> userPermissions = Looper.on(user.roles())
+                .flatmap(role -> Looper.on(role.permissions()))
+                .toList();
+        Looper.on(resourceProcessing.operationIterator()).foreach(resourceOp -> {
+            String resId = resourceOp.resourceId();
+            String resType = resourceOp.resourceType();
+            int opType = resourceOp.operationType();
+            if (! StringHelper.isNullOrEmpty(resId)) {
+                IResourceType resourceType = resourceTypeManager().findResourceType(resType);
+                IResource resource = resourceType.findResource(resId);
+                if (resource == null) {
+                    throw new GeneralException(
+                            "Can't find resource by id {} on resource type {}", resId, resType);
+                }
+                if (! resource.owner().equals(username)) {
+                    IGrant grant = Looper.on(resource.grants())
+                            .filter(resGrant -> resGrant.user().equals(username))
+                            .filter(resGrant -> (resGrant.allowedActions() & opType) == opType)
+                            .first();
+                    if (grant == null) {
+                        throw new GeneralException(
+                                "The user {} has no permission {} on resource id {} of resource type {}",
+                                username, opType, resId, resType);
+                    }
+                }
+            } else {
+                IPermission permission = Looper.on(userPermissions)
+                        .filter(userPermission -> userPermission.resourceType().equals(resType))
+                        .filter(userPermission -> (userPermission.actions() & opType) == opType)
+                        .first();
+                if (permission == null) {
+                    throw new GeneralException(
+                            "The user {} has no permission {} on resource type {}",
+                            username, opType, resType);
+                }
+            }
+        });
 
         return false;
     }

@@ -12,4 +12,6 @@ package uapi.net;
 public interface IRequest {
 
     IPeer peer();
+
+    ISession session();
 }
