@@ -13,6 +13,7 @@ import com.google.auto.service.AutoService;
 import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
+import uapi.auth.IResourceTypeManager;
 import uapi.auth.PermissionVerifier;
 import uapi.auth.annotation.Authenticate;
 import uapi.auth.annotation.Authenticates;
@@ -21,6 +22,9 @@ import uapi.behavior.annotation.Action;
 import uapi.codegen.*;
 import uapi.common.StringHelper;
 import uapi.rx.Looper;
+import uapi.service.IInjectableHandlerHelper;
+import uapi.service.IServiceHandlerHelper;
+import uapi.service.QualifiedServiceId;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -103,17 +107,26 @@ public class AuthenticateHandler extends AnnotationsHandler {
         String clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
         String ioType = actionMethodMeta.inputType();
 
+        final String fieldResTypeMgr = "_resTypeMgr";
         Map<String, Object> model = new HashMap<>();
         Template temp = builderContext.loadTemplate(TEMP_PROCESS);
 
         ClassMeta.Builder classBuilder = builderContext.newClassBuilder(pkgName, clsName);
+        IServiceHandlerHelper svcHelper = builderContext.getHelper(IServiceHandlerHelper.name);
+        IInjectableHandlerHelper injectHelper = builderContext.getHelper(IInjectableHandlerHelper.name);
+        injectHelper.addDependency(
+                builderContext,
+                classBuilder,
+                fieldResTypeMgr,
+                IResourceTypeManager.class.getCanonicalName(),
+                IResourceTypeManager.class.getCanonicalName(),
+                QualifiedServiceId.FROM_LOCAL,
+                false, false,
+                null,
+                false
+        );
+        svcHelper.becomeService(builderContext, classBuilder, IAction.class.getCanonicalName());
         classBuilder
-                .addAnnotationBuilder(AnnotationMeta.builder()
-                        .setName(AutoService.class.getCanonicalName())
-                        .addArgument(ArgumentMeta.builder()
-                                .setName("value")
-                                .setValue(IAction.class.getCanonicalName() + ".class")
-                                .setIsString(false)))
                 .addImplement(StringHelper.makeMD5("{}<{}>", IInterceptor.class.getName(), ioType))
                 .setClassName(PermissionVerifier.class.getName())
                 .addMethodBuilder(MethodMeta.builder()
@@ -153,7 +166,14 @@ public class AuthenticateHandler extends AnnotationsHandler {
                                 .setType(IExecutionContext.class.getCanonicalName()))
                         .addCodeBuilder(CodeMeta.builder()
                                 .setModel(model)
-                                .setTemplate(temp)));
+                                .setTemplate(temp)))
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PROTECTED)
+                        .setName("resourceTypeManager")
+                        .setReturnTypeName(IResourceTypeManager.class.getCanonicalName())
+                        .addCodeBuilder(CodeMeta.builder()
+                                .addRawCode(StringHelper.makeString("return this.{};", fieldResTypeMgr))));
         return classBuilder.getQualifiedClassName();
     }
 }

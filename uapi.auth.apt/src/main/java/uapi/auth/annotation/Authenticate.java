@@ -22,24 +22,24 @@ import java.lang.annotation.*;
 @Repeatable(Authenticates.class)
 public @interface Authenticate {
 
-    /**
-     * Resource type name
-     *
-     * @return  Resource type name
-     */
-    String resource();
-
-    /**
-     * Indicate specific resource id
-     *
-     * @return  Resource id
-     */
-    String resourceId() default StringHelper.EMPTY;
-
-    /**
-     * Required actions on the resource
-     *
-     * @return  actions
-     */
-    int requiredActions();
+//    /**
+//     * Resource type name
+//     *
+//     * @return  Resource type name
+//     */
+//    String resource();
+//
+//    /**
+//     * Indicate specific resource id
+//     *
+//     * @return  Resource id
+//     */
+//    String resourceId() default StringHelper.EMPTY;
+//
+//    /**
+//     * Required actions on the resource
+//     *
+//     * @return  actions
+//     */
+//    int requiredActions();
 }

@@ -9,7 +9,6 @@
 
 package uapi.auth;
 
-import uapi.GeneralException;
 import uapi.common.StringHelper;
 import uapi.net.IRequest;
 import uapi.net.ISession;
@@ -22,11 +21,11 @@ import java.util.List;
 
 public abstract class PermissionVerifier {
 
-    protected abstract IPermission[] requiredPermissions();
+//    protected abstract IPermission[] requiredPermissions();
 
     protected abstract IResourceTypeManager resourceTypeManager();
 
-    protected boolean verify(
+    protected void verify(
             final ResourceProcessing resourceProcessing
     ) {
         IRequest request = resourceProcessing.originalRequest();
@@ -45,11 +44,25 @@ public abstract class PermissionVerifier {
             String resType = resourceOp.resourceType();
             int opType = resourceOp.operationType();
             if (! StringHelper.isNullOrEmpty(resId)) {
+                // Check user permission on the resource type
+                IPermission permission = Looper.on(userPermissions)
+                        .filter(userPermission -> userPermission.resourceType().equals(resType))
+                        .filter(userPermission -> (userPermission.actions() & opType) == opType)
+                        .first();
+                if (permission != null) {
+                    return;
+                }
+
+                // Check user permission on specific resource
                 IResourceType resourceType = resourceTypeManager().findResourceType(resType);
                 IResource resource = resourceType.findResource(resId);
                 if (resource == null) {
-                    throw new GeneralException(
-                            "Can't find resource by id {} on resource type {}", resId, resType);
+                    throw AuthenticationException.builder()
+                            .errorCode(AuthenticationErrors.RESOURCE_NOT_FOUNT)
+                            .variables(new AuthenticationErrors.ResourceNotFound()
+                                    .resourceId(resId)
+                                    .resourceType(resType))
+                            .build();
                 }
                 if (! resource.owner().equals(username)) {
                     IGrant grant = Looper.on(resource.grants())
@@ -57,9 +70,14 @@ public abstract class PermissionVerifier {
                             .filter(resGrant -> (resGrant.allowedActions() & opType) == opType)
                             .first();
                     if (grant == null) {
-                        throw new GeneralException(
-                                "The user {} has no permission {} on resource id {} of resource type {}",
-                                username, opType, resId, resType);
+                        throw AuthenticationException.builder()
+                                .errorCode(AuthenticationErrors.NO_PERMISSION_ON_RESOURCE)
+                                .variables(new AuthenticationErrors.NoPermissionOnResource()
+                                        .username(username)
+                                        .permission(opType)
+                                        .resourceId(resId)
+                                        .resourceType(resType))
+                                .build();
                     }
                 }
             } else {
@@ -68,13 +86,15 @@ public abstract class PermissionVerifier {
                         .filter(userPermission -> (userPermission.actions() & opType) == opType)
                         .first();
                 if (permission == null) {
-                    throw new GeneralException(
-                            "The user {} has no permission {} on resource type {}",
-                            username, opType, resType);
+                    throw AuthenticationException.builder()
+                            .errorCode(AuthenticationErrors.NO_PERMISSION_ON_RESOURCE_TYPE)
+                            .variables(new AuthenticationErrors.NoPermissionOnResourceType()
+                                    .username(username)
+                                    .permission(opType)
+                                    .resourceType(resType))
+                            .build();
                 }
             }
         });
-
-        return false;
     }
 }
