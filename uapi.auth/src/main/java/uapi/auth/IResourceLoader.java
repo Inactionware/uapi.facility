@@ -9,10 +9,17 @@
 
 package uapi.auth;
 
+import uapi.IIdentifiable;
+
 /**
  * Resource loader is used to load specific resource from data store (like db, file system...)
  */
-public interface IResourceLoader {
+public interface IResourceLoader extends IIdentifiable<String> {
+
+    @Override
+    default String getId() {
+        return resourceTypeName();
+    }
 
     /**
      * Load resource by its id

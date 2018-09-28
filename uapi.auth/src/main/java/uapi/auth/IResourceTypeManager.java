@@ -15,6 +15,22 @@ package uapi.auth;
 public interface IResourceTypeManager {
 
     /**
+     * Register new resource load
+     *
+     * @param   loader
+     *          The resource loader
+     */
+    void register(IResourceLoader loader);
+
+    /**
+     * Register new resource type
+     *
+     * @param   resourceType
+     *          The resource type
+     */
+    void register(IResourceType resourceType);
+
+    /**
      * Register new resource type
      *
      * @param   resourceTypeName
@@ -31,12 +47,4 @@ public interface IResourceTypeManager {
      * @return  Resource type object of null if no such resource type
      */
     IResourceType findResourceType(String resourceTypeName);
-
-    /**
-     * Register new resource load
-     *
-     * @param   loader
-     *          The resource loader
-     */
-    void register(IResourceLoader loader);
 }

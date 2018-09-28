@@ -9,6 +9,7 @@
 
 package uapi.auth;
 
+import uapi.common.CollectionHelper;
 import uapi.exception.FileBasedExceptionErrors;
 import uapi.exception.IndexedParameters;
 
@@ -24,12 +25,16 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
     public static final int RESOURCE_NOT_FOUNT              = 1;
     public static final int NO_PERMISSION_ON_RESOURCE       = 2;
     public static final int NO_PERMISSION_ON_RESOURCE_TYPE  = 3;
+    public static final int DUPLICATED_RESOURCE_TYPE        = 4;
+    public static final int DUPLICATED_RESOURCE_LOADER      = 5;
 
     static {
         keyCodeMapping = new ConcurrentHashMap<>();
         keyCodeMapping.put(RESOURCE_NOT_FOUNT, ResourceNotFound.KEY);
         keyCodeMapping.put(NO_PERMISSION_ON_RESOURCE, NoPermissionOnResource.KEY);
         keyCodeMapping.put(NO_PERMISSION_ON_RESOURCE_TYPE, NoPermissionOnResourceType.KEY);
+        keyCodeMapping.put(DUPLICATED_RESOURCE_TYPE, DuplicatedResourceType.KEY);
+        keyCodeMapping.put(DUPLICATED_RESOURCE_LOADER, DuplicatedResourceLoader.KEY);
     }
 
     @Override
@@ -68,7 +73,7 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
         @Override
         public Object[] get() {
-            return new Object[] { this._resId, this._resType };
+            return CollectionHelper.newObjectArray(this._resId, this._resType);
         }
     }
 
@@ -107,7 +112,7 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
         @Override
         public Object[] get() {
-            return new Object[] { this._username, this._permission, this._resId, this._resType };
+            return CollectionHelper.newObjectArray( this._username, this._permission, this._resId, this._resType);
         }
     }
 
@@ -140,7 +145,49 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
         @Override
         public Object[] get() {
-            return new Object[] { this._username, this._permission, this._resType };
+            return CollectionHelper.newObjectArray( this._username, this._permission, this._resType);
+        }
+    }
+
+    /**
+     * Error string template:
+     *      The resource type was registered in the rep - {}
+     */
+    public static final class DuplicatedResourceType extends IndexedParameters<DuplicatedResourceType> {
+
+        private static final String KEY = "DuplicatedResourceType";
+
+        private String _resTypeName;
+
+        public DuplicatedResourceType resourceTypeName(String typeName) {
+            this._resTypeName = typeName;
+            return this;
+        }
+
+        @Override
+        public Object[] get() {
+            return CollectionHelper.newObjectArray(this._resTypeName);
+        }
+    }
+
+    /**
+     * Error string template:
+     *      The resource loader was registered in the repo - {}
+     */
+    public static final class DuplicatedResourceLoader extends IndexedParameters<DuplicatedResourceLoader> {
+
+        private static final String KEY = "DuplicatedResourceLoader";
+
+        private String _resTypeName;
+
+        public DuplicatedResourceLoader resourceTypeName(String typeName) {
+            this._resTypeName = typeName;
+            return this;
+        }
+
+        @Override
+        public Object[] get() {
+            return CollectionHelper.newObjectArray(this._resTypeName);
         }
     }
 }
