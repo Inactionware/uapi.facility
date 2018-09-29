@@ -21,6 +21,8 @@ public interface IResourceType extends IIdentifiable<String> {
         return name();
     }
 
+    void setName(String name);
+
     /**
      * Resource type name
      *

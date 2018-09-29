@@ -70,7 +70,8 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
                             .resourceTypeName(resourceTypeName))
                     .build();
         }
-        resType = new ResourceType(resourceTypeName);
+        resType = new ResourceType();
+        resType.setName(resourceTypeName);
         this._resTypes.put(resourceTypeName, resType);
         return resType;
     }

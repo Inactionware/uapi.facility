@@ -16,11 +16,16 @@ import uapi.common.ArgumentChecker;
 
 public class ResourceType implements IResourceType {
 
-    private final String _name;
+    private String _name;
     private int _action = 0;
     private IResourceLoader _loader;
 
-    public ResourceType(String name) {
+//    public ResourceType(String name) {
+//        ArgumentChecker.required(name, "name");
+//        this._name = name;
+//    }
+
+    public void setName(String name) {
         ArgumentChecker.required(name, "name");
         this._name = name;
     }
