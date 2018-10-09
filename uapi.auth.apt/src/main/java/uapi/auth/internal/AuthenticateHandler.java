@@ -13,6 +13,7 @@ import com.google.auto.service.AutoService;
 import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
+import uapi.auth.IPermission;
 import uapi.auth.IResourceTypeManager;
 import uapi.auth.PermissionVerifier;
 import uapi.auth.annotation.Authenticate;
@@ -37,11 +38,12 @@ import java.util.Set;
 @AutoService(IAnnotationsHandler.class)
 public class AuthenticateHandler extends AnnotationsHandler {
 
-    private static final String TEMP_BY         = "template/by_method.ftl";
-    private static final String TEMP_PROCESS    = "template/process_method.ftl";
+    private static final String TEMP_BY             = "template/by_method.ftl";
+    private static final String TEMP_PROCESS        = "template/interceptor_process_method.ftl";
+    private static final String TEMP_INTERC_CONSTR  = "template/interceptor_constructor.ftl";
 
     @SuppressWarnings("unchecked")
-    private static final Class<? extends Annotation>[] orderedAnnotations = new Class[] { Authenticates.class };
+    private static final Class<? extends Annotation>[] orderedAnnotations = new Class[] { Authenticates.class, Authenticate.class };
 
     @Override
     protected Class<? extends Annotation>[] getOrderedAnnotations() {
@@ -54,7 +56,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Class<? extends Annotation> annotationType,
             final Set<? extends Element> elements
     ) throws GeneralException {
-        if (annotationType != Authenticate.class) {
+        if (annotationType != Authenticates.class && annotationType != Authenticate.class) {
             throw new GeneralException("Unsupported annotation type - {}", annotationType.getCanonicalName());
         }
 
@@ -65,7 +67,12 @@ public class AuthenticateHandler extends AnnotationsHandler {
             }
             builderContext.checkAnnotations(classElement, Action.class);
 
-            Authenticate[] authenticates = classElement.getAnnotation(Authenticates.class).value();
+            Authenticate[] authenticates;
+            if (classElement.getAnnotation(Authenticates.class) == null) {
+                authenticates = new Authenticate[] { classElement.getAnnotation(Authenticate.class) };
+            } else {
+                authenticates = classElement.getAnnotation(Authenticates.class).value();
+            }
             // Find out input type and output type from the action
             IActionHandlerHelper actionHelper = builderContext.getHelper(IActionHandlerHelper.name);
             IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(classElement);
@@ -107,9 +114,12 @@ public class AuthenticateHandler extends AnnotationsHandler {
         String clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
         String ioType = actionMethodMeta.inputType();
 
+        final String fieldReqPerms = "_reqPerms";
         final String fieldResTypeMgr = "_resTypeMgr";
         Map<String, Object> model = new HashMap<>();
-        Template temp = builderContext.loadTemplate(TEMP_PROCESS);
+        model.put("authenticates", anthenticates);
+        Template tempProc = builderContext.loadTemplate(TEMP_PROCESS);
+        Template tempConstructor = builderContext.loadTemplate(TEMP_INTERC_CONSTR);
 
         ClassMeta.Builder classBuilder = builderContext.newClassBuilder(pkgName, clsName);
         IServiceHandlerHelper svcHelper = builderContext.getHelper(IServiceHandlerHelper.name);
@@ -127,13 +137,22 @@ public class AuthenticateHandler extends AnnotationsHandler {
         );
         svcHelper.becomeService(builderContext, classBuilder, IAction.class.getCanonicalName());
         classBuilder
-                .addImplement(StringHelper.makeMD5("{}<{}>", IInterceptor.class.getName(), ioType))
-                .setClassName(PermissionVerifier.class.getName())
+                .addImplement(StringHelper.makeString("{}<{}>", IInterceptor.class.getName(), ioType))
+                .setParentClassName(PermissionVerifier.class.getName())
+                .addFieldBuilder(FieldMeta.builder()
+                        .addModifier(Modifier.PRIVATE, Modifier.FINAL)
+                        .setName(fieldReqPerms)
+                        .setTypeName(Type.toArrayType(IPermission.class)))
+                .addMethodBuilder(MethodMeta.builder()
+                        .setName(clsName)
+                        .addCodeBuilder(CodeMeta.builder()
+                                .setTemplate(tempConstructor)
+                                .setModel(model)))
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
                         .setName("inputType")
-                        .setReturnTypeName(ioType)
+                        .setReturnTypeName(StringHelper.makeString("Class<{}>", ioType))
                         .addCodeBuilder(CodeMeta.builder()
                                 .addRawCode(StringHelper.makeString("return {}.class;", ioType))))
                 .addMethodBuilder(MethodMeta.builder()
@@ -149,7 +168,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
                         .setReturnTypeName(ActionIdentify.class.getCanonicalName())
                         .addCodeBuilder(CodeMeta.builder()
                                 .addRawCode(StringHelper.makeString(
-                                        "return uapi.behavior.ActionIdentify.toActionId({});",
+                                        "return uapi.behavior.ActionIdentify.toActionId({}.class);",
                                         classBuilder.getQualifiedClassName()))))
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
@@ -161,12 +180,19 @@ public class AuthenticateHandler extends AnnotationsHandler {
                                 .setName("input")
                                 .setType(ioType))
                         .addParameterBuilder(ParameterMeta.builder()
-                                .addModifier(Modifier.PUBLIC)
+                                .addModifier(Modifier.FINAL)
                                 .setName("context")
                                 .setType(IExecutionContext.class.getCanonicalName()))
                         .addCodeBuilder(CodeMeta.builder()
                                 .setModel(model)
-                                .setTemplate(temp)))
+                                .setTemplate(tempProc)))
+                .addMethodBuilder(MethodMeta.builder()
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .addModifier(Modifier.PROTECTED)
+                        .setName("requiredPermissions")
+                        .setReturnTypeName(Type.toArrayType(IPermission.class))
+                        .addCodeBuilder(CodeMeta.builder()
+                                .addRawCode(StringHelper.makeString("return this.{};", fieldReqPerms))))
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PROTECTED)

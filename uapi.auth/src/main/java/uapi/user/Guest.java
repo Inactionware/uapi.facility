@@ -7,17 +7,20 @@
  *  use the project into a commercial product
  */
 
-package uapi.user.internal;
+package uapi.user;
 
-import uapi.auth.BasicActions;
+import uapi.auth.IPermission;
+import uapi.user.IRole;
 
-public class UserActions extends BasicActions {
+public class Guest implements IRole {
 
-    public static final int LOGIN   = 0x10;
+    @Override
+    public String name() {
+        return GUEST;
+    }
 
-    public static final int ALL     = READ + MODIFY + DELETE + LOGIN;
-
-    private UserActions() {
-        super();
+    @Override
+    public IPermission[] permissions() {
+        return new IPermission[0];
     }
 }

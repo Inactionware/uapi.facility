@@ -9,19 +9,18 @@
 
 package uapi.auth;
 
-import uapi.common.StringHelper;
 import uapi.net.IRequest;
 import uapi.net.ISession;
 import uapi.protocol.ResourceProcessing;
 import uapi.rx.Looper;
 import uapi.user.IUser;
-import uapi.user.internal.Anonymous;
+import uapi.user.Anonymous;
 
 import java.util.List;
 
 public abstract class PermissionVerifier {
 
-//    protected abstract IPermission[] requiredPermissions();
+    protected abstract IPermission[] requiredPermissions();
 
     protected abstract IResourceTypeManager resourceTypeManager();
 
@@ -39,59 +38,49 @@ public abstract class PermissionVerifier {
         List<IPermission> userPermissions = Looper.on(user.roles())
                 .flatmap(role -> Looper.on(role.permissions()))
                 .toList();
-        Looper.on(resourceProcessing.operationIterator()).foreach(resourceOp -> {
-            String resId = resourceOp.resourceId();
-            String resType = resourceOp.resourceType();
-            int opType = resourceOp.operationType();
-            if (! StringHelper.isNullOrEmpty(resId)) {
-                // Check user permission on the resource type
-                IPermission permission = Looper.on(userPermissions)
-                        .filter(userPermission -> userPermission.resourceType().equals(resType))
-                        .filter(userPermission -> (userPermission.actions() & opType) == opType)
-                        .first();
-                if (permission != null) {
-                    return;
-                }
-
-                // Check user permission on specific resource
-                IResourceType resourceType = resourceTypeManager().findResourceType(resType);
-                IResource resource = resourceType.findResource(resId);
+        Looper.on(requiredPermissions()).foreach(requiredPermission -> {
+            final ResourceIdentify resId = requiredPermission.resourceId();
+            final int reqActions = requiredPermission.actions();
+            if (requiredPermission.resourceId().isSpecificResource()) {
+                // Check user permission on specific resourceId
+                IResourceType resourceType = resourceTypeManager().findResourceType(resId.getType());
+                IResource resource = resourceType.findResource(resId.getName());
                 if (resource == null) {
                     throw AuthenticationException.builder()
                             .errorCode(AuthenticationErrors.RESOURCE_NOT_FOUNT)
                             .variables(new AuthenticationErrors.ResourceNotFound()
-                                    .resourceId(resId)
-                                    .resourceType(resType))
+                                    .resourceId(resId.getName())
+                                    .resourceType(resId.getType()))
                             .build();
                 }
                 if (! resource.owner().equals(username)) {
                     IGrant grant = Looper.on(resource.grants())
                             .filter(resGrant -> resGrant.user().equals(username))
-                            .filter(resGrant -> (resGrant.allowedActions() & opType) == opType)
+                            .filter(resGrant -> (resGrant.allowedActions() & reqActions) == reqActions)
                             .first();
                     if (grant == null) {
                         throw AuthenticationException.builder()
-                                .errorCode(AuthenticationErrors.NO_PERMISSION_ON_RESOURCE)
-                                .variables(new AuthenticationErrors.NoPermissionOnResource()
+                                .errorCode(AuthenticationErrors.NO_PERMISSIONS_ON_RESOURCE)
+                                .variables(new AuthenticationErrors.NoPermissionsOnResource()
                                         .username(username)
-                                        .permission(opType)
-                                        .resourceId(resId)
-                                        .resourceType(resType))
+                                        .permission(reqActions)
+                                        .resourceId(resId))
                                 .build();
                     }
                 }
             } else {
+                // Check user permission on whole resourceId
                 IPermission permission = Looper.on(userPermissions)
-                        .filter(userPermission -> userPermission.resourceType().equals(resType))
-                        .filter(userPermission -> (userPermission.actions() & opType) == opType)
+                        .filter(userPermission -> userPermission.resourceId().getType().equals(resId.getType()))
+                        .filter(userPermission -> (userPermission.actions() & reqActions) == reqActions)
                         .first();
                 if (permission == null) {
                     throw AuthenticationException.builder()
-                            .errorCode(AuthenticationErrors.NO_PERMISSION_ON_RESOURCE_TYPE)
-                            .variables(new AuthenticationErrors.NoPermissionOnResourceType()
+                            .errorCode(AuthenticationErrors.NO_PERMISSIONS_ON_RESOURCE)
+                            .variables(new AuthenticationErrors.NoPermissionsOnResource()
                                     .username(username)
-                                    .permission(opType)
-                                    .resourceType(resType))
+                                    .permission(reqActions)
+                                    .resourceId(resId))
                             .build();
                 }
             }

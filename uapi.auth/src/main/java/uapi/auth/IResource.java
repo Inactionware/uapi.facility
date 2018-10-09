@@ -10,26 +10,26 @@
 package uapi.auth;
 
 /**
- * The resource is manageable unit in authentication framework
+ * The resourceId is manageable unit in authentication framework
  */
 public interface IResource {
 
     /**
-     * The resource id
+     * The resourceId id
      *
-     * @return  resource id
+     * @return  resourceId id
      */
     String id();
 
     /**
-     * The owner of the resource
+     * The owner of the resourceId
      *
-     * @return  The resource owner
+     * @return  The resourceId owner
      */
     String owner();
 
     /**
-     * The resource is granted to other user
+     * The resourceId is granted to other user
      *
      * @return  Grants
      */

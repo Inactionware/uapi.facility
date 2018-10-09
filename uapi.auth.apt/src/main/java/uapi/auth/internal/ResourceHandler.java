@@ -13,8 +13,6 @@ import com.google.auto.service.AutoService;
 import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
-import uapi.auth.IResource;
-import uapi.auth.IResourceLoader;
 import uapi.auth.IResourceType;
 import uapi.auth.annotation.Resource;
 import uapi.codegen.*;
@@ -33,7 +31,7 @@ import java.util.Set;
 @AutoService(IAnnotationsHandler.class)
 public class ResourceHandler extends AnnotationsHandler {
 
-    private static final String TEMP_GET_IDS            = "template/getIds_method.ftl";
+    private static final String TEMP_GET_IDS            = "template/resource_getIds_method.ftl";
     private static final String TEMP_SET_LOADER         = "template/setLoader_method.ftl";
     private static final String TEMP_FIND_RESOURCE      = "template/findResource_method.ftl";
 
@@ -141,7 +139,7 @@ public class ResourceHandler extends AnnotationsHandler {
 //                        .setName("availableActions")
 //                        .setReturnTypeName(Type.INTEGER)
 //                        .addCodeBuilder(CodeMeta.builder()
-//                                .addRawCode(StringHelper.makeString("return {};", resource.availableActions()))))
+//                                .addRawCode(StringHelper.makeString("return {};", resourceId.availableActions()))))
 //                .addMethodBuilder(MethodMeta.builder()
 //                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
 //                        .addModifier(Modifier.PUBLIC)

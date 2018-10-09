@@ -10,7 +10,7 @@
 package uapi.auth;
 
 /**
- * Indicate the specific user has specified action on specific resource
+ * Indicate the specific user has specified action on specific resourceId
  */
 public interface IGrant {
 
@@ -22,7 +22,7 @@ public interface IGrant {
     String user();
 
     /**
-     * Allowed actions on the resource
+     * Allowed actions on the resourceId
      *
      * @return  Allowed action
      */

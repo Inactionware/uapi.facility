@@ -7,11 +7,10 @@
  *  use the project into a commercial product
  */
 
-package uapi.user.internal;
+package uapi.user;
 
+import uapi.auth.ResourceIdentify;
 import uapi.auth.annotation.Resource;
-import uapi.user.IRole;
-import uapi.user.IUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.List;
 public class User implements IUser {
 
     public static final String TYPE = "User";
+    public static final String ID   = ResourceIdentify.SEPARATOR + TYPE;
 
     private String _name;
     private List<IRole> _roles = new ArrayList<>();

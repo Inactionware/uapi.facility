@@ -27,19 +27,19 @@ public @interface Authenticate {
 //     *
 //     * @return  Resource type name
 //     */
-//    String resource();
-//
-//    /**
-//     * Indicate specific resource id
-//     *
-//     * @return  Resource id
-//     */
-//    String resourceId() default StringHelper.EMPTY;
-//
-//    /**
-//     * Required actions on the resource
-//     *
-//     * @return  actions
-//     */
-//    int requiredActions();
+//    String resourceId();
+
+    /**
+     * Indicate specific resourceId id
+     *
+     * @return  Resource id
+     */
+    String resourceId();
+
+    /**
+     * Required actions on the resourceId
+     *
+     * @return  actions
+     */
+    int requiredActions();
 }

@@ -7,11 +7,20 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth;
+package uapi.user;
 
-public interface IPermission {
+import uapi.user.IRole;
+import uapi.user.IUser;
 
-    ResourceIdentify resourceId();
+public class Anonymous implements IUser {
 
-    int actions();
+    @Override
+    public String name() {
+        return ANONYMOUS;
+    }
+
+    @Override
+    public IRole[] roles() {
+        return new IRole[0];
+    }
 }

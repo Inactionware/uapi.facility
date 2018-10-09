@@ -10,28 +10,28 @@
 package uapi.auth;
 
 /**
- * A manager to mange resource related information
+ * A manager to mange resourceId related information
  */
 public interface IResourceTypeManager {
 
     /**
-     * Register new resource load
+     * Register new resourceId load
      *
      * @param   loader
-     *          The resource loader
+     *          The resourceId loader
      */
     void register(IResourceLoader loader);
 
     /**
-     * Register new resource type
+     * Register new resourceId type
      *
      * @param   resourceType
-     *          The resource type
+     *          The resourceId type
      */
     void register(IResourceType resourceType);
 
     /**
-     * Register new resource type
+     * Register new resourceId type
      *
      * @param   resourceTypeName
      *          Resource type name
@@ -40,11 +40,11 @@ public interface IResourceTypeManager {
     IResourceType register(String resourceTypeName);
 
     /**
-     * Find resource type object by resource type name
+     * Find resourceId type object by resourceId type name
      *
      * @param   resourceTypeName
      *          Resource type name
-     * @return  Resource type object of null if no such resource type
+     * @return  Resource type object of null if no such resourceId type
      */
     IResourceType findResourceType(String resourceTypeName);
 }

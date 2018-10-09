@@ -29,7 +29,7 @@ public @interface Resource {
     String name();
 
     /**
-     * Available action on this resource
+     * Available action on this resourceId
      *
      * @return  Available actions
      */

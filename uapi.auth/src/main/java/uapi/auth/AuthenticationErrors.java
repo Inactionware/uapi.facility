@@ -23,16 +23,14 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
     private static final Map<Integer, String> keyCodeMapping;
 
     public static final int RESOURCE_NOT_FOUNT              = 1;
-    public static final int NO_PERMISSION_ON_RESOURCE       = 2;
-    public static final int NO_PERMISSION_ON_RESOURCE_TYPE  = 3;
-    public static final int DUPLICATED_RESOURCE_TYPE        = 4;
-    public static final int DUPLICATED_RESOURCE_LOADER      = 5;
+    public static final int NO_PERMISSIONS_ON_RESOURCE      = 2;
+    public static final int DUPLICATED_RESOURCE_TYPE        = 3;
+    public static final int DUPLICATED_RESOURCE_LOADER      = 4;
 
     static {
         keyCodeMapping = new ConcurrentHashMap<>();
         keyCodeMapping.put(RESOURCE_NOT_FOUNT, ResourceNotFound.KEY);
-        keyCodeMapping.put(NO_PERMISSION_ON_RESOURCE, NoPermissionOnResource.KEY);
-        keyCodeMapping.put(NO_PERMISSION_ON_RESOURCE_TYPE, NoPermissionOnResourceType.KEY);
+        keyCodeMapping.put(NO_PERMISSIONS_ON_RESOURCE, NoPermissionsOnResource.KEY);
         keyCodeMapping.put(DUPLICATED_RESOURCE_TYPE, DuplicatedResourceType.KEY);
         keyCodeMapping.put(DUPLICATED_RESOURCE_LOADER, DuplicatedResourceLoader.KEY);
     }
@@ -52,7 +50,7 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
     /**
      * Error string template:
-     *      Can't find resource by id {} on resource type {}
+     *      Can't find resourceId by id {} on resourceId type {}
      */
     public static final class ResourceNotFound extends IndexedParameters<ResourceNotFound> {
 
@@ -79,79 +77,73 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
     /**
      * Error string template:
-     *      The user {} has no permission {} on resource id {} of resource type {}
+     *      The user {} has no permissions {} on resourceId - {}
      */
-    public static final class NoPermissionOnResource extends IndexedParameters<NoPermissionOnResource> {
+    public static final class NoPermissionsOnResource extends IndexedParameters<NoPermissionsOnResource> {
 
         private static final String KEY = "NoPermissionOnResource";
 
         private String _username;
-        private int _permission;
-        private String _resId;
-        private String _resType;
+        private int _permissions;
+        private ResourceIdentify _resId;
 
-        public NoPermissionOnResource username(String name) {
+        public NoPermissionsOnResource username(String name) {
             this._username = name;
             return this;
         }
 
-        public NoPermissionOnResource permission(int permission) {
-            this._permission = permission;
+        public NoPermissionsOnResource permission(int permissions) {
+            this._permissions = permissions;
             return this;
         }
 
-        public NoPermissionOnResource resourceId(String id) {
-            this._resId = id;
-            return this;
-        }
-
-        public NoPermissionOnResource resourceType(String type) {
-            this._resType = type;
+        public NoPermissionsOnResource resourceId(ResourceIdentify resourceId) {
+            this._resId = resourceId;
             return this;
         }
 
         @Override
         public Object[] get() {
-            return CollectionHelper.newObjectArray( this._username, this._permission, this._resId, this._resType);
+            return CollectionHelper.newObjectArray( this._username, this._permissions, this._resId.toString() );
         }
     }
 
+//    /**
+//     * Error string template:
+//     *      The user {} has no permission {} on resourceId type {}
+//     */
+//    public static final class NoPermissionOnResourceType extends IndexedParameters<NoPermissionOnResourceType> {
+//
+//        private static final String KEY = "NoPermissionOnResourceType";
+//
+//        private String _username;
+//        private int _permission;
+//        private String _resType;
+//
+//        public NoPermissionOnResourceType username(String name) {
+//            this._username = name;
+//            return this;
+//        }
+//
+//        public NoPermissionOnResourceType permission(int permission) {
+//            this._permission = permission;
+//            return this;
+//        }
+//
+//        public NoPermissionOnResourceType resourceType(String type) {
+//            this._resType = type;
+//            return this;
+//        }
+//
+//        @Override
+//        public Object[] get() {
+//            return CollectionHelper.newObjectArray( this._username, this._permission, this._resType);
+//        }
+//    }
+
     /**
      * Error string template:
-     *      The user {} has no permission {} on resource type {}
-     */
-    public static final class NoPermissionOnResourceType extends IndexedParameters<NoPermissionOnResourceType> {
-
-        private static final String KEY = "NoPermissionOnResourceType";
-
-        private String _username;
-        private int _permission;
-        private String _resType;
-
-        public NoPermissionOnResourceType username(String name) {
-            this._username = name;
-            return this;
-        }
-
-        public NoPermissionOnResourceType permission(int permission) {
-            this._permission = permission;
-            return this;
-        }
-
-        public NoPermissionOnResourceType resourceType(String type) {
-            this._resType = type;
-            return this;
-        }
-
-        @Override
-        public Object[] get() {
-            return CollectionHelper.newObjectArray( this._username, this._permission, this._resType);
-        }
-    }
-
-    /**
-     * Error string template:
-     *      The resource type was registered in the rep - {}
+     *      The resourceId type was registered in the rep - {}
      */
     public static final class DuplicatedResourceType extends IndexedParameters<DuplicatedResourceType> {
 
@@ -172,7 +164,7 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
     /**
      * Error string template:
-     *      The resource loader was registered in the repo - {}
+     *      The resourceId loader was registered in the repo - {}
      */
     public static final class DuplicatedResourceLoader extends IndexedParameters<DuplicatedResourceLoader> {
 
