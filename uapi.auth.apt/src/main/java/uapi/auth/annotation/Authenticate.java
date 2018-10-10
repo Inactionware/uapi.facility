@@ -9,8 +9,6 @@
 
 package uapi.auth.annotation;
 
-import uapi.common.StringHelper;
-
 import java.lang.annotation.*;
 
 /**
@@ -22,17 +20,10 @@ import java.lang.annotation.*;
 @Repeatable(Authenticates.class)
 public @interface Authenticate {
 
-//    /**
-//     * Resource type name
-//     *
-//     * @return  Resource type name
-//     */
-//    String resourceId();
-
     /**
-     * Indicate specific resourceId id
+     * Indicate specific resourceId
      *
-     * @return  Resource id
+     * @return  Resource
      */
     String resourceId();
 

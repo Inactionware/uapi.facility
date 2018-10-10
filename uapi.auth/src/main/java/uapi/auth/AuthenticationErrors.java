@@ -81,7 +81,7 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
      */
     public static final class NoPermissionsOnResource extends IndexedParameters<NoPermissionsOnResource> {
 
-        private static final String KEY = "NoPermissionOnResource";
+        private static final String KEY = "NoPermissionsOnResource";
 
         private String _username;
         private int _permissions;
@@ -107,39 +107,6 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
             return CollectionHelper.newObjectArray( this._username, this._permissions, this._resId.toString() );
         }
     }
-
-//    /**
-//     * Error string template:
-//     *      The user {} has no permission {} on resourceId type {}
-//     */
-//    public static final class NoPermissionOnResourceType extends IndexedParameters<NoPermissionOnResourceType> {
-//
-//        private static final String KEY = "NoPermissionOnResourceType";
-//
-//        private String _username;
-//        private int _permission;
-//        private String _resType;
-//
-//        public NoPermissionOnResourceType username(String name) {
-//            this._username = name;
-//            return this;
-//        }
-//
-//        public NoPermissionOnResourceType permission(int permission) {
-//            this._permission = permission;
-//            return this;
-//        }
-//
-//        public NoPermissionOnResourceType resourceType(String type) {
-//            this._resType = type;
-//            return this;
-//        }
-//
-//        @Override
-//        public Object[] get() {
-//            return CollectionHelper.newObjectArray( this._username, this._permission, this._resType);
-//        }
-//    }
 
     /**
      * Error string template:

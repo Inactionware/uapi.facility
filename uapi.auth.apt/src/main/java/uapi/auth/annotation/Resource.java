@@ -22,11 +22,11 @@ import java.lang.annotation.Target;
 public @interface Resource {
 
     /**
-     * Resource name
+     * Resource type
      *
-     * @return  Resource name
+     * @return  Resource type
      */
-    String name();
+    String type();
 
     /**
      * Available action on this resourceId

@@ -20,11 +20,6 @@ public class ResourceType implements IResourceType {
     private int _action = 0;
     private IResourceLoader _loader;
 
-//    public ResourceType(String name) {
-//        ArgumentChecker.required(name, "name");
-//        this._name = name;
-//    }
-
     public void setName(String name) {
         ArgumentChecker.required(name, "name");
         this._name = name;

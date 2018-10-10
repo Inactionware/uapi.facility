@@ -15,7 +15,7 @@ import uapi.auth.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Resource(name = User.TYPE, availableActions = UserActions.ALL)
+@Resource(type = User.TYPE, availableActions = UserActions.ALL)
 public class User implements IUser {
 
     public static final String TYPE = "User";

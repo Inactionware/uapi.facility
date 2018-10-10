@@ -18,6 +18,7 @@ import uapi.service.annotation.Service;
 @Service
 @Action
 @Authenticate(resourceId = User.ID, requiredActions = UserActions.SIGNIN)
+@Authenticate(resourceId = User.ID, requiredActions = UserActions.SIGNUP)
 public class SignInUser {
 
     @ActionDo

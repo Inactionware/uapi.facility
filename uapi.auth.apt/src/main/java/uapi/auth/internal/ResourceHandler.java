@@ -63,7 +63,7 @@ public class ResourceHandler extends AnnotationsHandler {
             Resource res = classElement.getAnnotation(Resource.class);
             String pkgName = builderContext.packageName(classElement);
             String clsName = classElement.getSimpleName().toString();
-            String resName = res.name();
+            String resName = res.type();
             int availableActions = res.availableActions();
 
             ClassMeta.Builder classBudr = builderContext.newClassBuilder(
@@ -129,10 +129,10 @@ public class ResourceHandler extends AnnotationsHandler {
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
-                        .setName("name")
+                        .setName("type")
                         .setReturnTypeName(Type.Q_STRING)
                         .addCodeBuilder(CodeMeta.builder()
-                                .addRawCode(StringHelper.makeString("return \"{}\";", resource.name()))));
+                                .addRawCode(StringHelper.makeString("return \"{}\";", resource.type()))));
 //                .addMethodBuilder(MethodMeta.builder()
 //                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
 //                        .addModifier(Modifier.PUBLIC)
