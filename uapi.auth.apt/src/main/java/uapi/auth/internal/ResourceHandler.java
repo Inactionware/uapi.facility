@@ -123,6 +123,5 @@ public class ResourceHandler extends AnnotationsHandler {
                         .setReturnTypeName(Type.Q_STRING)
                         .addCodeBuilder(CodeMeta.builder()
                                 .addRawCode(StringHelper.makeString("return \"{}\";", resource.type()))));
-
     }
 }
