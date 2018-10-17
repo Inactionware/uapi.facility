@@ -9,20 +9,29 @@
 
 package uapi.auth;
 
+import uapi.IIdentifiable;
+
 /**
- * A resource category
+ * A resourceId category
  */
-public interface IResourceType {
+public interface IResourceType extends IIdentifiable<String> {
+
+    @Override
+    default String getId() {
+        return name();
+    }
+
+    void setName(String name);
 
     /**
      * Resource type name
      *
-     * @return  Name of resource type
+     * @return  Name of resourceId type
      */
     String name();
 
     /**
-     * Add supported action on this resource type
+     * Add supported action on this resourceId type
      *
      * @param   action
      *          Supported action
@@ -30,26 +39,26 @@ public interface IResourceType {
     void addAction(int action);
 
     /**
-     * Return available actions on this resource type
+     * Return available actions on this resourceId type
      *
      * @return  Available actions
      */
     int availableActions();
 
     /**
-     * Set resource load which used to load specific resource
+     * Set resourceId load which used to load specific resourceId
      *
      * @param   loader
-     *          The resource loader
+     *          The resourceId loader
      */
     void setLoader(IResourceLoader loader);
 
     /**
-     * Find resource by specific resource id
+     * Find resourceId by specific resourceId id
      *
      * @param   id
-     *          The resource id
-     * @return  Resource object of null if no such resource exists
+     *          The resourceId id
+     * @return  Resource object of null if no such resourceId exists
      */
     IResource findResource(String id);
 }

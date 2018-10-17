@@ -11,7 +11,7 @@ package uapi.net;
 
 public interface IRequest {
 
-    String peerAddress();
+    IPeer peer();
 
-    int peerPort();
+    ISession session();
 }

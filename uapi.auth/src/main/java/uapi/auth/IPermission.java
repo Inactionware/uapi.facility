@@ -9,22 +9,9 @@
 
 package uapi.auth;
 
-/**
- * Indicate the specific user has specified action on specific resourceId
- */
-public interface IGrant {
+public interface IPermission {
 
-    /**
-     * The user name
-     *
-     * @return  User name
-     */
-    String user();
+    ResourceIdentify resourceId();
 
-    /**
-     * Allowed actions on the resourceId
-     *
-     * @return  Allowed action
-     */
-    int allowedActions();
+    int actions();
 }

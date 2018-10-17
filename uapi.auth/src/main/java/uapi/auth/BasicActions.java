@@ -10,25 +10,42 @@
 package uapi.auth;
 
 /**
- * Define basic actions for generic resource.
- * All customized resource's action must support basic action.
+ * Define basic actions for generic resourceId.
+ * All customized resourceId's action must support basic action.
+ *
+ * Each action will take one bit position.
  */
 public class BasicActions {
 
     /**
-     * The resource can be read
+     * No action
      */
-    public static final int READ    = 0x01;
+    public static final int NONE        = 0x00;
 
     /**
-     * The resource can be modified
+     * Reserved bit position
      */
-    public static final int MODIFY  = 0x02;
+    public static final int RESERVED    = 0x01;
 
     /**
-     * The resource can be deleted
+     * The resourceId can be read
      */
-    public static final int DELETE  = 0x04;
+    public static final int READ        = 0x02;
 
-    private BasicActions() { }
+    /**
+     * The resourceId can be modified
+     */
+    public static final int MODIFY      = 0x04;
+
+    /**
+     * The resourceId can be deleted
+     */
+    public static final int DELETE      = 0x08;
+
+    /**
+     * All basic actions
+     */
+    public static final int BASIC_ALL   = READ + MODIFY + DELETE;
+
+    protected BasicActions() { }
 }

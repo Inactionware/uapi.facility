@@ -11,6 +11,8 @@ package uapi.net.http.netty.internal;
 
 import uapi.common.ArgumentChecker;
 import uapi.common.StringHelper;
+import uapi.net.IPeer;
+import uapi.net.ISession;
 import uapi.net.http.*;
 import uapi.net.http.HttpMethod;
 import uapi.net.http.HttpVersion;
@@ -35,15 +37,25 @@ public class NettyHttpRequest implements IHttpRequest {
         this._head = head;
         this._body = body;
     }
+//
+//    @Override
+//    public String peerAddress() {
+//        return this._head.peerAddress();
+//    }
+//
+//    @Override
+//    public int peerPort() {
+//        return this._head.peerPort();
+//    }
 
     @Override
-    public String peerAddress() {
-        return this._head.peerAddress();
+    public IPeer peer() {
+        return null;
     }
 
     @Override
-    public int peerPort() {
-        return this._head.peerPort();
+    public ISession session() {
+        return null;
     }
 
     @Override

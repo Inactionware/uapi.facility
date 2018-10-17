@@ -13,8 +13,6 @@ import com.google.auto.service.AutoService;
 import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
-import uapi.auth.IResource;
-import uapi.auth.IResourceLoader;
 import uapi.auth.IResourceType;
 import uapi.auth.annotation.Resource;
 import uapi.codegen.*;
@@ -30,11 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@AutoService(IAnnotationsHandler.class)
 public class ResourceHandler extends AnnotationsHandler {
 
-    private static final String TEMP_GET_IDS            = "template/getIds_method.ftl";
-    private static final String TEMP_SET_LOADER         = "template/setLoader_method.ftl";
-    private static final String TEMP_FIND_RESOURCE      = "template/findResource_method.ftl";
+    private static final String TEMP_GET_IDS            = "template/resource_getIds_method.ftl";
 
     private static final String VAR_SVC_IDS = "serviceIds";
 
@@ -64,7 +61,7 @@ public class ResourceHandler extends AnnotationsHandler {
             Resource res = classElement.getAnnotation(Resource.class);
             String pkgName = builderContext.packageName(classElement);
             String clsName = classElement.getSimpleName().toString();
-            String resName = res.name();
+            String resName = res.type();
             int availableActions = res.availableActions();
 
             ClassMeta.Builder classBudr = builderContext.newClassBuilder(
@@ -118,50 +115,13 @@ public class ResourceHandler extends AnnotationsHandler {
         Map<String, Object> model = new HashMap<>();
         model.put(KEY_FIELD_LOADER, VAL_FIELD_LOADER);
 
-        Template tempSetLoader = builderCtx.loadTemplate(TEMP_SET_LOADER);
-        Template tempFindResource = builderCtx.loadTemplate(TEMP_FIND_RESOURCE);
-
-        classBuilder.addImplement(IResourceType.class)
-                .addFieldBuilder(FieldMeta.builder()
-                        .addModifier(Modifier.PRIVATE)
-                        .setTypeName(IResourceLoader.class.getCanonicalName())
-                        .setName(VAL_FIELD_LOADER))
+        classBuilder.setParentClassName(ResourceType.class.getCanonicalName())
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
                         .setName("name")
                         .setReturnTypeName(Type.Q_STRING)
                         .addCodeBuilder(CodeMeta.builder()
-                                .addRawCode(StringHelper.makeString("return \"{}\";", resource.name()))))
-                .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
-                        .addModifier(Modifier.PUBLIC)
-                        .setName("availableActions")
-                        .setReturnTypeName(Type.INTEGER)
-                        .addCodeBuilder(CodeMeta.builder()
-                                .addRawCode(StringHelper.makeString("return {};", resource.availableActions()))))
-                .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
-                        .addModifier(Modifier.PUBLIC)
-                        .setName("setLoader")
-                        .addParameterBuilder(ParameterMeta.builder()
-                                .addModifier(Modifier.FINAL)
-                                .setType(IResourceLoader.class.getCanonicalName())
-                                .setName("loader"))
-                        .addCodeBuilder(CodeMeta.builder()
-                                .setModel(model)
-                                .setTemplate(tempSetLoader)))
-                .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
-                        .addModifier(Modifier.PUBLIC)
-                        .setName("findResource")
-                        .addParameterBuilder(ParameterMeta.builder()
-                                .addModifier(Modifier.FINAL)
-                                .setType(IResource.class.getCanonicalName())
-                                .setName("id"))
-                        .addCodeBuilder(CodeMeta.builder()
-                                .setModel(model)
-                                .setTemplate(tempFindResource)));
-
+                                .addRawCode(StringHelper.makeString("return \"{}\";", resource.type()))));
     }
 }

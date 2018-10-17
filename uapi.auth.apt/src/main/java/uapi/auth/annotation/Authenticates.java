@@ -14,24 +14,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * A uapi.auth.annotation.Resource is a manageable unit for authentication framework.
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Resource {
+public @interface Authenticates {
 
-    /**
-     * Resource type
-     *
-     * @return  Resource type
-     */
-    String type();
-
-    /**
-     * Available action on this resourceId
-     *
-     * @return  Available actions
-     */
-    int availableActions();
+    Authenticate[] value();
 }

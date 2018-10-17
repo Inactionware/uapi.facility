@@ -9,22 +9,9 @@
 
 package uapi.auth;
 
-/**
- * Indicate the specific user has specified action on specific resourceId
- */
-public interface IGrant {
+public class SessionKeys {
 
-    /**
-     * The user name
-     *
-     * @return  User name
-     */
-    String user();
+    public static final String USER = "User";
 
-    /**
-     * Allowed actions on the resourceId
-     *
-     * @return  Allowed action
-     */
-    int allowedActions();
+    private SessionKeys() { }
 }
