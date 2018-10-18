@@ -21,6 +21,7 @@ dependencies {
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",
             "uapi:uapi.service:${uapi_cornerstone_version}",
+            "uapi:uapi.event:${uapi_cornerstone_version}",
             "uapi:uapi.behavior:${uapi_cornerstone_version}"
     )
 }
