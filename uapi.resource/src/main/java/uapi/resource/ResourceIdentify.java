@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth;
+package uapi.resource;
 
 import uapi.IPartibleIdentify;
 import uapi.InvalidArgumentException;

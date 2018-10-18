@@ -9,9 +9,6 @@
 
 package uapi.user;
 
-import uapi.user.IRole;
-import uapi.user.IUser;
-
 public class Anonymous implements IUser {
 
     @Override

@@ -9,8 +9,8 @@
 
 package uapi.user;
 
-import uapi.auth.ResourceIdentify;
-import uapi.auth.annotation.Resource;
+import uapi.resource.ResourceIdentify;
+import uapi.resource.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,11 +7,11 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth.internal;
+package uapi.resource.internal;
 
 import uapi.GeneralException;
-import uapi.auth.*;
 import uapi.common.ArgumentChecker;
+import uapi.resource.*;
 import uapi.service.IServiceLifecycle;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.Optional;
@@ -34,9 +34,9 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
         ArgumentChecker.required(resourceType, "resourceType");
         String resName = resourceType.name();
         if (this._resTypes.containsKey(resName)) {
-            throw AuthenticationException.builder()
-                    .errorCode(AuthenticationErrors.DUPLICATED_RESOURCE_TYPE)
-                    .variables(new AuthenticationErrors.DuplicatedResourceType()
+            throw ResourceException.builder()
+                    .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
+                    .variables(new ResourceErrors.DuplicatedResourceType()
                             .resourceTypeName(resName))
                     .build();
         }
@@ -50,9 +50,9 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
         ArgumentChecker.required(loader, "loader");
         IResourceLoader existingLoader = this._resLoaders.get(loader.resourceTypeName());
         if (existingLoader != null) {
-            throw AuthenticationException.builder()
-                    .errorCode(AuthenticationErrors.DUPLICATED_RESOURCE_LOADER)
-                    .variables(new AuthenticationErrors.DuplicatedResourceLoader()
+            throw ResourceException.builder()
+                    .errorCode(ResourceErrors.DUPLICATED_RESOURCE_LOADER)
+                    .variables(new ResourceErrors.DuplicatedResourceLoader()
                             .resourceTypeName(loader.resourceTypeName()))
                     .build();
         }
@@ -64,9 +64,9 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
         ArgumentChecker.required(resourceTypeName, "resourceTypeName");
         IResourceType resType = this._resTypes.get(resourceTypeName);
         if (resType != null) {
-            throw AuthenticationException.builder()
-                    .errorCode(AuthenticationErrors.DUPLICATED_RESOURCE_TYPE)
-                    .variables(new AuthenticationErrors.DuplicatedResourceType()
+            throw ResourceException.builder()
+                    .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
+                    .variables(new ResourceErrors.DuplicatedResourceType()
                             .resourceTypeName(resourceTypeName))
                     .build();
         }

@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth;
+package uapi.resource;
 
 /**
  * Indicate the specific user has specified action on specific resourceId

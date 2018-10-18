@@ -12,6 +12,7 @@ package uapi.auth;
 import uapi.common.CollectionHelper;
 import uapi.exception.FileBasedExceptionErrors;
 import uapi.exception.IndexedParameters;
+import uapi.resource.ResourceIdentify;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,15 +25,11 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
 
     public static final int RESOURCE_NOT_FOUNT              = 1;
     public static final int NO_PERMISSIONS_ON_RESOURCE      = 2;
-    public static final int DUPLICATED_RESOURCE_TYPE        = 3;
-    public static final int DUPLICATED_RESOURCE_LOADER      = 4;
 
     static {
         keyCodeMapping = new ConcurrentHashMap<>();
         keyCodeMapping.put(RESOURCE_NOT_FOUNT, ResourceNotFound.KEY);
         keyCodeMapping.put(NO_PERMISSIONS_ON_RESOURCE, NoPermissionsOnResource.KEY);
-        keyCodeMapping.put(DUPLICATED_RESOURCE_TYPE, DuplicatedResourceType.KEY);
-        keyCodeMapping.put(DUPLICATED_RESOURCE_LOADER, DuplicatedResourceLoader.KEY);
     }
 
     @Override
@@ -105,48 +102,6 @@ public class AuthenticationErrors extends FileBasedExceptionErrors<Authenticatio
         @Override
         public Object[] get() {
             return CollectionHelper.newObjectArray( this._username, this._permissions, this._resId.toString() );
-        }
-    }
-
-    /**
-     * Error string template:
-     *      The resourceId type was registered in the rep - {}
-     */
-    public static final class DuplicatedResourceType extends IndexedParameters<DuplicatedResourceType> {
-
-        private static final String KEY = "DuplicatedResourceType";
-
-        private String _resTypeName;
-
-        public DuplicatedResourceType resourceTypeName(String typeName) {
-            this._resTypeName = typeName;
-            return this;
-        }
-
-        @Override
-        public Object[] get() {
-            return CollectionHelper.newObjectArray(this._resTypeName);
-        }
-    }
-
-    /**
-     * Error string template:
-     *      The resourceId loader was registered in the repo - {}
-     */
-    public static final class DuplicatedResourceLoader extends IndexedParameters<DuplicatedResourceLoader> {
-
-        private static final String KEY = "DuplicatedResourceLoader";
-
-        private String _resTypeName;
-
-        public DuplicatedResourceLoader resourceTypeName(String typeName) {
-            this._resTypeName = typeName;
-            return this;
-        }
-
-        @Override
-        public Object[] get() {
-            return CollectionHelper.newObjectArray(this._resTypeName);
         }
     }
 }

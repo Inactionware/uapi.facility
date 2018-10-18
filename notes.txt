@@ -5,6 +5,7 @@ Module error category mapping:
     uapi.protocol           0x0210
     uapi.protocol.graphql   0x0211
     uapi.auth               0x0220
+    uapi.resource           0x0230
 
 Copyright text:
     Copyright (c) $today.year. The UAPI Authors

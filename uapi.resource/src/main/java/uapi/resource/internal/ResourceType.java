@@ -7,12 +7,12 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth.internal;
+package uapi.resource.internal;
 
-import uapi.auth.IResource;
-import uapi.auth.IResourceLoader;
-import uapi.auth.IResourceType;
 import uapi.common.ArgumentChecker;
+import uapi.resource.IResource;
+import uapi.resource.IResourceLoader;
+import uapi.resource.IResourceType;
 
 public class ResourceType implements IResourceType {
 

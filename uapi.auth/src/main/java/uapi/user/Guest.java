@@ -10,7 +10,6 @@
 package uapi.user;
 
 import uapi.auth.IPermission;
-import uapi.user.IRole;
 
 public class Guest implements IRole {
 

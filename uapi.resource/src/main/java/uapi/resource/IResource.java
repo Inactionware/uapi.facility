@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth;
+package uapi.resource;
 
 /**
  * The resourceId is manageable unit in authentication framework
