@@ -10,10 +10,14 @@
 package uapi.resource.internal;
 
 import uapi.GeneralException;
+import uapi.behavior.IResponsible;
+import uapi.behavior.IResponsibleRegistry;
 import uapi.common.ArgumentChecker;
 import uapi.resource.*;
+import uapi.rx.Looper;
 import uapi.service.IServiceLifecycle;
 import uapi.service.annotation.Inject;
+import uapi.service.annotation.OnActivate;
 import uapi.service.annotation.Optional;
 import uapi.service.annotation.Service;
 
@@ -28,19 +32,19 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
     private final Map<String, IResourceLoader> _resLoaders = new ConcurrentHashMap<>();
 
     @Inject
+    protected IResponsibleRegistry _respReg;
+
+    @OnActivate
+    public void activate() {
+        Looper.on(this._resTypes.values()).foreach(this::registerResourceBehavior);
+    }
+
+    @Inject
     @Optional
     @Override
     public void register(IResourceType resourceType) {
         ArgumentChecker.required(resourceType, "resourceType");
-        String resName = resourceType.name();
-        if (this._resTypes.containsKey(resName)) {
-            throw ResourceException.builder()
-                    .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
-                    .variables(new ResourceErrors.DuplicatedResourceType()
-                            .resourceTypeName(resName))
-                    .build();
-        }
-        this._resTypes.put(resName, resourceType);
+        registerResourceType(resourceType);
     }
 
     @Inject
@@ -87,7 +91,8 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
         ArgumentChecker.required(service, "service");
         if (service instanceof IResourceType) {
             IResourceType resType = (IResourceType) service;
-            this._resTypes.put(resType.name(), resType);
+            registerResourceType(resType);
+            registerResourceBehavior(resType);
         } else if (service instanceof IResourceLoader) {
             IResourceLoader resLoader = (IResourceLoader) service;
             this._resLoaders.put(resLoader.resourceTypeName(), resLoader);
@@ -96,5 +101,27 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
                     "Inject unsupported service - id: {}, service: {}",
                     serviceId, service.getClass().getName());
         }
+    }
+
+    private void registerResourceType(IResourceType resType) {
+        String resName = resType.name();
+        if (this._resTypes.containsKey(resName)) {
+            throw ResourceException.builder()
+                    .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
+                    .variables(new ResourceErrors.DuplicatedResourceType()
+                            .resourceTypeName(resName))
+                    .build();
+        }
+        this._resTypes.put(resName, resType);
+    }
+
+    private void registerResourceBehavior(IResourceType resType) {
+        if (! (resType instanceof ICapable)) {
+            return;
+        }
+        ICapable capable = (ICapable) resType;
+        String resName = resType.name();
+        IResponsible resp = this._respReg.register(resName);
+        capable.initBehavior(resp);
     }
 }
