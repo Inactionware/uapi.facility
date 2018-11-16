@@ -7,16 +7,16 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth.internal;
+package uapi.resource.internal;
 
 import com.google.auto.service.AutoService;
 import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
-import uapi.auth.IResourceType;
-import uapi.auth.annotation.Resource;
 import uapi.codegen.*;
 import uapi.common.StringHelper;
+import uapi.resource.IResourceType;
+import uapi.resource.annotation.Resource;
 import uapi.rx.Looper;
 import uapi.service.IService;
 

@@ -9,6 +9,8 @@
 
 package uapi.auth;
 
+import uapi.resource.ResourceIdentify;
+
 public interface IPermission {
 
     ResourceIdentify resourceId();

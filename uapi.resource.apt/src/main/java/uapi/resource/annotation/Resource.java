@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth.annotation;
+package uapi.resource.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

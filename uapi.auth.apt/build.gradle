@@ -19,6 +19,7 @@ dependencies {
             "uapi:uapi.service.apt:${uapi_cornerstone_version}",
             "uapi:uapi.behavior:${uapi_cornerstone_version}",
             "uapi:uapi.behavior.apt:${uapi_cornerstone_version}",
+            project(':uapi.resource'),
             project(':uapi.auth')
     )
 }

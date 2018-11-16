@@ -10,7 +10,7 @@
 package uapi.auth.internal;
 
 import uapi.auth.IPermission;
-import uapi.auth.ResourceIdentify;
+import uapi.resource.ResourceIdentify;
 
 public class Permission implements IPermission {
 

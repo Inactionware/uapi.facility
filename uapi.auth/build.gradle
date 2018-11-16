@@ -19,6 +19,7 @@ dependencies {
     compile (
             "uapi:uapi.common:${uapi_base_version}",
             "uapi:uapi.exception:${uapi_base_version}",
+            project(':uapi.resource'),
             project(':uapi.protocol')
     )
 }
