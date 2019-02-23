@@ -1,1 +1,1 @@
-return uapi.behavior.ActionIdentify.toActionId(${interceptorClass}.class);
+return new uapi.behavior.ActionIdentify[] { uapi.behavior.ActionIdentify.toActionId(${interceptorClass}.class) };
