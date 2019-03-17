@@ -76,7 +76,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
             }
             // Find out input type and output type from the action
             IActionHandlerHelper actionHelper = builderContext.getHelper(IActionHandlerHelper.name);
-            IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(classElement);
+            IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(builderContext, classElement);
 
             String interceptorClass = createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
             implementIInterceptive(builderContext, classElement, interceptorClass);
