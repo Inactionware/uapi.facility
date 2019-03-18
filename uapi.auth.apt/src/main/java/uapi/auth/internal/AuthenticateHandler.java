@@ -38,9 +38,10 @@ import java.util.Set;
 @AutoService(IAnnotationsHandler.class)
 public class AuthenticateHandler extends AnnotationsHandler {
 
-    private static final String TEMP_BY             = "template/by_method.ftl";
-    private static final String TEMP_PROCESS        = "template/interceptor_process_method.ftl";
-    private static final String TEMP_INTERC_CONSTR  = "template/interceptor_constructor.ftl";
+    private static final String TEMP_BY                 = "template/by_method.ftl";
+    private static final String TEMPLATE_INPUT_METAS    = "template/inputMetas_method.ftl";
+    private static final String TEMP_PROCESS            = "template/interceptor_process_method.ftl";
+    private static final String TEMP_INTERC_CONSTR      = "template/interceptor_constructor.ftl";
 
     @SuppressWarnings("unchecked")
     private static final Class<? extends Annotation>[] orderedAnnotations = new Class[] { Authenticates.class, Authenticate.class };
@@ -75,7 +76,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
             }
             // Find out input type and output type from the action
             IActionHandlerHelper actionHelper = builderContext.getHelper(IActionHandlerHelper.name);
-            IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(classElement);
+            IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(builderContext, classElement);
 
             String interceptorClass = createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
             implementIInterceptive(builderContext, classElement, interceptorClass);
@@ -93,12 +94,12 @@ public class AuthenticateHandler extends AnnotationsHandler {
         Template temp = builderContext.loadTemplate(TEMP_BY);
 
         ClassMeta.Builder classBuilder = builderContext.findClassBuilder(classElement);
-        classBuilder.addImplement(IInterceptive.class)
+        classBuilder.addImplement(IIntercepted.class)
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
                         .setName("by")
-                        .setReturnTypeName(ActionIdentify.class.getTypeName())
+                        .setReturnTypeName(StringHelper.makeString("{}[]", ActionIdentify.class.getTypeName()))
                         .addCodeBuilder(CodeMeta.builder()
                                 .setModel(model)
                                 .setTemplate(temp)));
@@ -112,12 +113,13 @@ public class AuthenticateHandler extends AnnotationsHandler {
     ) {
         String pkgName = builderContext.packageName(classElement);
         String clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
-        String ioType = actionMethodMeta.inputType();
 
         final String fieldReqPerms = "_reqPerms";
         final String fieldResTypeMgr = "_resTypeMgr";
         Map<String, Object> model = new HashMap<>();
         model.put("authenticates", anthenticates);
+        model.put("actionParameterMetas", actionMethodMeta.parameterMetas());
+        Template tempInputMetas = builderContext.loadTemplate(TEMPLATE_INPUT_METAS);
         Template tempProc = builderContext.loadTemplate(TEMP_PROCESS);
         Template tempConstructor = builderContext.loadTemplate(TEMP_INTERC_CONSTR);
 
@@ -137,7 +139,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
         );
         svcHelper.becomeService(builderContext, classBuilder, IAction.class.getCanonicalName());
         classBuilder
-                .addImplement(StringHelper.makeString("{}<{}>", IInterceptor.class.getName(), ioType))
+                .addImplement(IInterceptor.class.getCanonicalName())
                 .setParentClassName(PermissionVerifier.class.getName())
                 .addFieldBuilder(FieldMeta.builder()
                         .addModifier(Modifier.PRIVATE, Modifier.FINAL)
@@ -149,12 +151,11 @@ public class AuthenticateHandler extends AnnotationsHandler {
                                 .setTemplate(tempConstructor)
                                 .setModel(model)))
                 .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .setName("inputMetas")
                         .addModifier(Modifier.PUBLIC)
-                        .setName("inputType")
-                        .setReturnTypeName(StringHelper.makeString("Class<{}>", ioType))
-                        .addCodeBuilder(CodeMeta.builder()
-                                .addRawCode(StringHelper.makeString("return {}.class;", ioType))))
+                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+                        .setReturnTypeName(Type.toArrayType(ActionInputMeta.class))
+                        .addCodeBuilder(CodeMeta.builder().setTemplate(tempInputMetas).setModel(model)))
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
@@ -174,15 +175,13 @@ public class AuthenticateHandler extends AnnotationsHandler {
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
                         .addModifier(Modifier.PUBLIC)
                         .setName("process")
-                        .setReturnTypeName(ioType)
+                        .setReturnTypeName(Type.VOID)
                         .addParameterBuilder(ParameterMeta.builder()
-                                .addModifier(Modifier.FINAL)
-                                .setName("input")
-                                .setType(ioType))
+                                .setName("inputs").setType(Type.toArrayType(Object.class)))
                         .addParameterBuilder(ParameterMeta.builder()
-                                .addModifier(Modifier.FINAL)
-                                .setName("context")
-                                .setType(IExecutionContext.class.getCanonicalName()))
+                                .setName("outputs").setType(Type.toArrayType(ActionOutput.class)))
+                        .addParameterBuilder(ParameterMeta.builder()
+                                .setName("context").setType(IExecutionContext.class.getCanonicalName()))
                         .addCodeBuilder(CodeMeta.builder()
                                 .setModel(model)
                                 .setTemplate(tempProc)))

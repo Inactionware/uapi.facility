@@ -1,6 +1,6 @@
 rootProject.name = 'uapi.facility'
 
-include 'uapi.service.spring'
+include 'uapi.service.spring', 'uapi.behavior.common'
 include 'uapi.net', 'uapi.net.telnet', 'uapi.net.http', 'uapi.net.http.netty'
 include 'uapi.resource', 'uapi.resource.apt'
 include 'uapi.protocol', 'uapi.protocol.graphql'

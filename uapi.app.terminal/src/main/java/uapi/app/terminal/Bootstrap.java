@@ -9,7 +9,6 @@
 
 package uapi.app.terminal;
 
-import uapi.Tags;
 import uapi.UapiException;
 import uapi.app.AppErrors;
 import uapi.app.AppException;
