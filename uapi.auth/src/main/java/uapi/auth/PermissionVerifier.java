@@ -28,21 +28,21 @@ public abstract class PermissionVerifier {
     protected void verify(
             final ResourceProcessing resourceProcessing
     ) {
-        IRequest request = resourceProcessing.originalRequest();
-        ISession session = request.session();
+        var request = resourceProcessing.originalRequest();
+        var session = request.session();
         IUser user = session.get(SessionKeys.USER);
         if (user == null) {
             user = new Anonymous();
             session.set(SessionKeys.USER, user);
         }
-        String username = user.name();
-        List<IPermission> userPermissions = Looper.on(user.roles())
+        var username = user.name();
+        var userPermissions = Looper.on(user.roles())
                 .flatmap(role -> Looper.on(role.permissions()))
                 .toList();
         Looper.on(requiredPermissions()).foreach(requiredPermission -> {
             final ResourceIdentify resId = requiredPermission.resourceId();
             final int reqActions = requiredPermission.actions();
-            IPermission permission = Looper.on(userPermissions)
+            var permission = Looper.on(userPermissions)
                     .filter(userPermission -> userPermission.resourceId().getType().equals(resId.getType()))
                     .filter(userPermission -> (userPermission.actions() & reqActions) == reqActions)
                     .first();
@@ -51,8 +51,8 @@ public abstract class PermissionVerifier {
             }
             if (requiredPermission.resourceId().isSpecificResource()) {
                 // Check user permission on specific resourceId
-                IResourceType resourceType = resourceTypeManager().findResourceType(resId.getType());
-                IResource resource = resourceType.findResource(resId.getName());
+                var resourceType = resourceTypeManager().findResourceType(resId.getType());
+                var resource = resourceType.findResource(resId.getName());
                 if (resource == null) {
                     throw AuthenticationException.builder()
                             .errorCode(AuthenticationErrors.RESOURCE_NOT_FOUNT)
@@ -62,7 +62,7 @@ public abstract class PermissionVerifier {
                             .build();
                 }
                 if (! resource.owner().equals(username)) {
-                    IGrant grant = Looper.on(resource.grants())
+                    var grant = Looper.on(resource.grants())
                             .filter(resGrant -> resGrant.user().equals(username))
                             .filter(resGrant -> (resGrant.allowedActions() & reqActions) == reqActions)
                             .first();

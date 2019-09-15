@@ -58,12 +58,12 @@ public class TelnetListener implements ITelnetListener {
         this._workerGroup = new NioEventLoopGroup();
 
         try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
+            var bootstrap = new ServerBootstrap();
             bootstrap.group(this._bossGroup, this._workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new TelNetInitializer());
-            Channel ch = bootstrap.bind(this._host, this._port).sync().channel();
+            var ch = bootstrap.bind(this._host, this._port).sync().channel();
             ch.closeFuture().sync();
         } catch (Exception ex) {
             // do nothing
@@ -121,7 +121,7 @@ public class TelnetListener implements ITelnetListener {
                 response = "Did you say '" + request + "'?\r\n";
             }
 
-            ChannelFuture future = ctx.write(response);
+            var future = ctx.write(response);
 
             if (close) {
                 future.addListener(ChannelFutureListener.CLOSE);

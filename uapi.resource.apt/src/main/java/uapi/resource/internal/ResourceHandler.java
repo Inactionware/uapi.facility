@@ -58,13 +58,13 @@ public class ResourceHandler extends AnnotationsHandler {
                 throw new GeneralException(
                         "The element {} must be a class element", classElement.getSimpleName().toString());
             }
-            Resource res = classElement.getAnnotation(Resource.class);
-            String pkgName = builderContext.packageName(classElement);
-            String clsName = classElement.getSimpleName().toString();
-            String resName = res.type();
-            int availableActions = res.availableActions();
+            var res = classElement.getAnnotation(Resource.class);
+            var pkgName = builderContext.packageName(classElement);
+            var clsName = classElement.getSimpleName().toString();
+            var resName = res.type();
+            var availableActions = res.availableActions();
 
-            ClassMeta.Builder classBudr = builderContext.newClassBuilder(
+            var classBudr = builderContext.newClassBuilder(
                     pkgName, StringHelper.makeString("Resource_{}_Generated", clsName));
             implementIService(classBudr, builderContext);
             implementIResourceType(classBudr, builderContext, res);
@@ -75,10 +75,10 @@ public class ResourceHandler extends AnnotationsHandler {
             final ClassMeta.Builder classBuilder,
             final IBuilderContext builderCtx
     ) {
-        Map<String, Object> model = new HashMap<>();
+        var model = new HashMap<String, Object>();
         model.put(VAR_SVC_IDS, new String[] { IResourceType.class.getCanonicalName() });
 
-        Template tempGetIds = builderCtx.loadTemplate(TEMP_GET_IDS);
+        var tempGetIds = builderCtx.loadTemplate(TEMP_GET_IDS);
 
         classBuilder.addImplement(IService.class)
                 .addAnnotationBuilder(AnnotationMeta.builder()
@@ -110,9 +110,9 @@ public class ResourceHandler extends AnnotationsHandler {
             final IBuilderContext builderCtx,
             final Resource resource
     ) {
-        final String KEY_FIELD_LOADER   = "FieldLoader";
-        final String VAL_FIELD_LOADER   = "_loader";
-        Map<String, Object> model = new HashMap<>();
+        final var KEY_FIELD_LOADER   = "FieldLoader";
+        final var VAL_FIELD_LOADER   = "_loader";
+        var model = new HashMap<String, Object>();
         model.put(KEY_FIELD_LOADER, VAL_FIELD_LOADER);
 
         classBuilder.setParentClassName(ResourceType.class.getCanonicalName())

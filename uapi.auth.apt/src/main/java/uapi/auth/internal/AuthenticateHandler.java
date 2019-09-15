@@ -76,9 +76,9 @@ public class AuthenticateHandler extends AnnotationsHandler {
             }
             // Find out input type and output type from the action
             IActionHandlerHelper actionHelper = builderContext.getHelper(IActionHandlerHelper.name);
-            IActionHandlerHelper.ActionMethodMeta actionMethodMeta = actionHelper.parseActionMethod(builderContext, classElement);
+            var actionMethodMeta = actionHelper.parseActionMethod(builderContext, classElement);
 
-            String interceptorClass = createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
+            var interceptorClass = createInterceptor(builderContext, classElement, authenticates, actionMethodMeta);
             implementIInterceptive(builderContext, classElement, interceptorClass);
 
         });
@@ -89,11 +89,11 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Element classElement,
             final String interceptorClass
     ) {
-        Map<String, Object> model = new HashMap<>();
+        var model = new HashMap<String, Object>();
         model.put("interceptorClass", interceptorClass);
-        Template temp = builderContext.loadTemplate(TEMP_BY);
+        var temp = builderContext.loadTemplate(TEMP_BY);
 
-        ClassMeta.Builder classBuilder = builderContext.findClassBuilder(classElement);
+        var classBuilder = builderContext.findClassBuilder(classElement);
         classBuilder.addImplement(IIntercepted.class)
                 .addMethodBuilder(MethodMeta.builder()
                         .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
@@ -111,19 +111,19 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Authenticate[] anthenticates,
             final IActionHandlerHelper.ActionMethodMeta actionMethodMeta
     ) {
-        String pkgName = builderContext.packageName(classElement);
-        String clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
+        final var pkgName = builderContext.packageName(classElement);
+        final var clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
 
-        final String fieldReqPerms = "_reqPerms";
-        final String fieldResTypeMgr = "_resTypeMgr";
-        Map<String, Object> model = new HashMap<>();
+        final var fieldReqPerms = "_reqPerms";
+        final var fieldResTypeMgr = "_resTypeMgr";
+        var model = new HashMap<String, Object>();
         model.put("authenticates", anthenticates);
         model.put("actionParameterMetas", actionMethodMeta.parameterMetas());
-        Template tempInputMetas = builderContext.loadTemplate(TEMPLATE_INPUT_METAS);
-        Template tempProc = builderContext.loadTemplate(TEMP_PROCESS);
-        Template tempConstructor = builderContext.loadTemplate(TEMP_INTERC_CONSTR);
+        var tempInputMetas = builderContext.loadTemplate(TEMPLATE_INPUT_METAS);
+        var tempProc = builderContext.loadTemplate(TEMP_PROCESS);
+        var tempConstructor = builderContext.loadTemplate(TEMP_INTERC_CONSTR);
 
-        ClassMeta.Builder classBuilder = builderContext.newClassBuilder(pkgName, clsName);
+        var classBuilder = builderContext.newClassBuilder(pkgName, clsName);
         IServiceHandlerHelper svcHelper = builderContext.getHelper(IServiceHandlerHelper.name);
         IInjectableHandlerHelper injectHelper = builderContext.getHelper(IInjectableHandlerHelper.name);
         injectHelper.addDependency(

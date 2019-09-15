@@ -52,7 +52,7 @@ class NettyHttpRequestHead {
         this._method = ConstantConverter.toUapi(request.method());
 
         // Decode request uri
-        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
+        var queryStringDecoder = new QueryStringDecoder(request.uri());
         this._uri = queryStringDecoder.uri();
         this._params = queryStringDecoder.parameters();
         this._path = queryStringDecoder.path();
@@ -64,12 +64,12 @@ class NettyHttpRequestHead {
                 .foreach(entry -> this._headers.put(entry.getKey().toLowerCase(), entry.getValue()));
 
         // Decode http content type and charset
-        String strContentType = this._headers.get(HttpHeaderNames.CONTENT_TYPE.toString().toLowerCase());
+        var strContentType = this._headers.get(HttpHeaderNames.CONTENT_TYPE.toString().toLowerCase());
         if (strContentType == null) {
             this._contentType = DEFAULT_CONTENT_TYPE;
             this._charset = DEFAULT_CHARSET;
         } else {
-            String[] contentTypeInfo = strContentType.split(";");
+            var contentTypeInfo = strContentType.split(";");
             this._contentType = ContentType.parse(contentTypeInfo[0].trim());
             if (contentTypeInfo.length == 1) {
                 this._charset = DEFAULT_CHARSET;
@@ -84,7 +84,7 @@ class NettyHttpRequestHead {
             }
         }
 
-        String strContentLen = httpHeaders.get(HttpHeaderNames.CONTENT_LENGTH);
+        var strContentLen = httpHeaders.get(HttpHeaderNames.CONTENT_LENGTH);
         if (strContentLen == null) {
             this._contentLength = DEFAULT_CONTENT_LENGTH;
         } else {

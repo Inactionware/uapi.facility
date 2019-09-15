@@ -32,12 +32,12 @@ public class ErrorProcessing {
     ) {
         ArgumentChecker.required(failure, "failure");
 
-        Exception exception = failure.cause();
-        Object[] failureInputs = failure.failureInputs();
+        var exception = failure.cause();
+        var failureInputs = failure.failureInputs();
         Looper.on(failureInputs).foreach(failureInput -> {
             if (failureInput instanceof ResourceProcessing) {
-                ResourceProcessing processing = (ResourceProcessing) failureInput;
-                IProtocolEncoder encoder = processing.encoder();
+                var processing = (ResourceProcessing) failureInput;
+                var encoder = processing.encoder();
                 if (encoder == null) {
                     throw ProtocolException.builder()
                             .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)

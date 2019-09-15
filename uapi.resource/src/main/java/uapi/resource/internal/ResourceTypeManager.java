@@ -52,7 +52,7 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
     @Override
     public void register(IResourceLoader loader) {
         ArgumentChecker.required(loader, "loader");
-        IResourceLoader existingLoader = this._resLoaders.get(loader.resourceTypeName());
+        var existingLoader = this._resLoaders.get(loader.resourceTypeName());
         if (existingLoader != null) {
             throw ResourceException.builder()
                     .errorCode(ResourceErrors.DUPLICATED_RESOURCE_LOADER)
@@ -66,7 +66,7 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
     @Override
     public IResourceType register(String resourceTypeName) {
         ArgumentChecker.required(resourceTypeName, "resourceTypeName");
-        IResourceType resType = this._resTypes.get(resourceTypeName);
+        var resType = this._resTypes.get(resourceTypeName);
         if (resType != null) {
             throw ResourceException.builder()
                     .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
@@ -104,7 +104,7 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
     }
 
     private void registerResourceType(IResourceType resType) {
-        String resName = resType.name();
+        var resName = resType.name();
         if (this._resTypes.containsKey(resName)) {
             throw ResourceException.builder()
                     .errorCode(ResourceErrors.DUPLICATED_RESOURCE_TYPE)
@@ -119,9 +119,9 @@ public class ResourceTypeManager implements IResourceTypeManager, IServiceLifecy
         if (! (resType instanceof ICapable)) {
             return;
         }
-        ICapable capable = (ICapable) resType;
-        String resName = resType.name();
-        IResponsible resp = this._respReg.register(resName);
+        var capable = (ICapable) resType;
+        var resName = resType.name();
+        var resp = this._respReg.register(resName);
         capable.initBehavior(resp);
     }
 }

@@ -30,7 +30,7 @@ public class InitProcessing {
     public ResourceProcessing process(final INetEvent event) {
         ArgumentChecker.required(event, "event");
 
-        IProtocol proto = this._protoReg.find(event);
+        var proto = this._protoReg.find(event);
         if (proto == null) {
             throw ProtocolException.builder()
                     .errorCode(ProtocolErrors.PROTOCOL_NOT_FOUND)

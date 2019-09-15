@@ -53,40 +53,40 @@ public class BehaviorHandler extends AnnotationsHandler {
                         "The element {} must be a method element", annotatedElement.getSimpleName().toString());
             }
             builderContext.checkModifiers(annotatedElement, Behavior.class, Modifier.PRIVATE, Modifier.STATIC);
-            ExecutableElement methodElement = (ExecutableElement) annotatedElement;
-            String methodName = methodElement.getSimpleName().toString();
-            String returnType = methodElement.getReturnType().toString();
+            var methodElement = (ExecutableElement) annotatedElement;
+            var methodName = methodElement.getSimpleName().toString();
+            var returnType = methodElement.getReturnType().toString();
             if (! Type.VOID.equals(returnType)) {
                 throw new GeneralException(
                         "Expect the Behavior method [{}] return void, but it return - {}",
                         methodName, returnType);
             }
-            List paramElements = methodElement.getParameters();
+            var paramElements = methodElement.getParameters();
             if (paramElements.size() != 1) {
                 throw new GeneralException(
                         "Expect the Behavior method [{}] has only 1 parameter, but found - {}",
                         methodName, paramElements.size());
             }
-            VariableElement paramElement = (VariableElement) paramElements.get(0);
-            String paramType = paramElement.asType().toString();
+            var paramElement = (VariableElement) paramElements.get(0);
+            var paramType = paramElement.asType().toString();
             if (! IBehaviorBuilder.class.getCanonicalName().equals(paramType)) {
                 throw new GeneralException(
                         "Expect the Behavior method [{}] has a parameter which type is IBehaviorBuilder, but found - {}",
                         methodName, paramType);
             }
-            Element classElement = methodElement.getEnclosingElement();
+            var classElement = methodElement.getEnclosingElement();
             builderContext.checkAnnotations(classElement, Resource.class);
 
-            String resource = classElement.getSimpleName().toString();
-            ClassMeta.Builder clsBuilder = builderContext.findClassBuilder(classElement);
-            Template temp = builderContext.loadTemplate(TEMP_INIT_BEHAVIOR);
-            Map<String, Object> model = clsBuilder.createTransienceIfAbsent(MODEL_INIT_BEHAVIOR, HashMap::new);
-            List<BehaviorModel> behaviors = (List<BehaviorModel>) model.get("behaviors");
+            var resource = classElement.getSimpleName().toString();
+            var clsBuilder = builderContext.findClassBuilder(classElement);
+            var temp = builderContext.loadTemplate(TEMP_INIT_BEHAVIOR);
+            var model = clsBuilder.createTransienceIfAbsent(MODEL_INIT_BEHAVIOR, HashMap::new);
+            var behaviors = (List<BehaviorModel>) model.get("behaviors");
             if (behaviors == null) {
                 behaviors = new ArrayList<>();
                 model.put("behaviors", behaviors);
             }
-            BehaviorModel bmodel = new BehaviorModel();
+            var bmodel = new BehaviorModel();
             bmodel.setResourceName(resource);
             bmodel.setBehaviorName(methodName);
             behaviors.add(bmodel);

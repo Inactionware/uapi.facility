@@ -41,7 +41,7 @@ public class Bootstrap extends SystemBootstrap {
 
     @Override
     protected void loadConfig(final IRegistry registry) {
-        CliConfigProvider cliCfgProvider = registry().findService(CliConfigProvider.class);
+        var cliCfgProvider = registry().findService(CliConfigProvider.class);
         if (cliCfgProvider == null) {
             throw AppException.builder()
                     .errorCode(AppErrors.SPECIFIC_SERVICE_NOT_FOUND)
@@ -57,7 +57,7 @@ public class Bootstrap extends SystemBootstrap {
             final IRegistry registry,
             final List<IService> appServices
     ) {
-        IEventBus eventBus = registry().findService(IEventBus.class);
+        var eventBus = registry().findService(IEventBus.class);
         eventBus.register(new ExitSystemRequestHandler());
     }
 
@@ -75,7 +75,7 @@ public class Bootstrap extends SystemBootstrap {
         }
 
         // Send system shutting down event
-        IEventBus eventBus = registry().findService(IEventBus.class);
+        var eventBus = registry().findService(IEventBus.class);
         SystemShuttingDownEvent shuttingDownEvent = new SystemShuttingDownEvent(appServices, ex);
         eventBus.fire(shuttingDownEvent, true);
     }

@@ -39,7 +39,7 @@ public class ProtocolRegistry implements IProtocolRegistry, IServiceLifecycle {
     public IProtocol find(INetEvent event) {
         ArgumentChecker.required(event, "event");
 
-        List<IProtocol> protocols = Looper.on(this._protocols.entrySet())
+        var protocols = Looper.on(this._protocols.entrySet())
                 .map(Map.Entry::getValue)
                 .filter(protocol -> protocol.isSupport(event))
                 .toList();
@@ -67,7 +67,7 @@ public class ProtocolRegistry implements IProtocolRegistry, IServiceLifecycle {
     @Override
     public void onDependencyInject(String serviceId, Object service) {
         if (IProtocol.class.getCanonicalName().equals(serviceId) && service instanceof IProtocol) {
-            IProtocol proto = (IProtocol) service;
+            var proto = (IProtocol) service;
             this._protocols.put(proto.getId(), proto);
         } else {
             throw new GeneralException(

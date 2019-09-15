@@ -27,7 +27,7 @@ public class EncodeProtocol {
     ) {
         ArgumentChecker.required(processing, "processing");
 
-        IProtocolEncoder encoder = processing.encoder();
+        var encoder = processing.encoder();
         if (encoder == null) {
             throw ProtocolException.builder()
                     .errorCode(ProtocolErrors.ENCODER_NOT_DEFINED)

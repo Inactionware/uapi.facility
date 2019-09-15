@@ -50,18 +50,18 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (msg instanceof HttpContent) {
-            ByteBuf bodyPart = ((HttpContent) msg).content();
+            var bodyPart = ((HttpContent) msg).content();
             if (bodyPart.readableBytes() == 0) {
                 // empty body, do nothing
             } else if (this._bodySize + bodyPart.readableBytes() <= this._reqBodyBufSize.toByteVolume()) {
                 this._bodyBuffer.add(bodyPart);
                 this._bodySize += bodyPart.readableBytes();
             } else {
-                NettyHttpRequestBody body = new NettyHttpRequestBodyFragment(
-                        this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
-                NettyHttpRequest request = new NettyHttpRequest(this._reqHead, body);
-                NettyHttpResponse response = new NettyHttpResponse(channelCtx, this._reqHead);
-                HttpEvent httpEvent = new HttpEvent(this._eventSource, request, response);
+                var body = new NettyHttpRequestBodyFragment(
+                        this._bodyBuffer.toArray(new ByteBuf[0]));
+                var request = new NettyHttpRequest(this._reqHead, body);
+                var response = new NettyHttpResponse(channelCtx, this._reqHead);
+                var httpEvent = new HttpEvent(this._eventSource, request, response);
                 this._eventBus.fire(httpEvent);
                 this._fragmentBody = true;
 
@@ -74,14 +74,14 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
                 NettyHttpRequestBody body;
                 if (this._fragmentBody) {
                     body = new NettyHttpRequestBodyFragment(
-                            this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
+                            this._bodyBuffer.toArray(new ByteBuf[0]));
                 } else {
                     body = new NettyHttpRequestBody(
-                            this._bodyBuffer.toArray(new ByteBuf[this._bodyBuffer.size()]));
+                            this._bodyBuffer.toArray(new ByteBuf[0]));
                 }
-                NettyHttpRequest request = new NettyHttpRequest(this._reqHead, body);
-                NettyHttpResponse response = new NettyHttpResponse(channelCtx, this._reqHead);
-                HttpEvent httpEvent = new HttpEvent(this._eventSource, request, response);
+                var request = new NettyHttpRequest(this._reqHead, body);
+                var response = new NettyHttpResponse(channelCtx, this._reqHead);
+                var httpEvent = new HttpEvent(this._eventSource, request, response);
                 this._eventBus.fire(httpEvent, (event) -> event.response().close());
                 this._bodyBuffer.clear();
                 this._bodySize = 0;
@@ -128,7 +128,7 @@ class HttpRequestHandler extends ChannelInboundHandlerAdapter {
                 status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
                 break;
         }
-        FullHttpMessage response = new DefaultFullHttpResponse(
+        var response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(ex.toString(), CharsetUtil.UTF_8));
         response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
         ctx.writeAndFlush(response);

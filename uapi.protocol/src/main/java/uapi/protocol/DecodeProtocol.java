@@ -27,7 +27,7 @@ public class DecodeProtocol {
     ) {
         ArgumentChecker.required(processing, "processing");
 
-        IProtocolDecoder decoder = processing.decoder();
+        var decoder = processing.decoder();
         if (decoder == null) {
             throw ProtocolException.builder()
                     .errorCode(ProtocolErrors.DECODER_NOT_DEFINED)

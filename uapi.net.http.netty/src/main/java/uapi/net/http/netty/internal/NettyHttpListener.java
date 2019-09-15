@@ -136,7 +136,7 @@ public class NettyHttpListener implements IHttpListener {
     private void innerStartUp() throws NetException {
         this._bossGroup = new NioEventLoopGroup();
         this._workerGroup = new NioEventLoopGroup();
-        ServerBootstrap svcBootstrap = new ServerBootstrap();
+        var svcBootstrap = new ServerBootstrap();
         svcBootstrap.group(this._bossGroup, this._workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new HttpChannelInitializer())

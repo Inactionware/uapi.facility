@@ -37,8 +37,8 @@ public class GraphQLProtocol implements IProtocol {
         if (! (event instanceof HttpEvent)) {
             return false;
         }
-        HttpEvent httpEvent = (HttpEvent) event;
-        IHttpRequest httpReq = httpEvent.request();
+        var httpEvent = (HttpEvent) event;
+        var httpReq = httpEvent.request();
         if (httpReq.method() == HttpMethod.GET && httpReq.hasParam("query")) {
             return true;
         }

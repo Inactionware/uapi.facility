@@ -25,7 +25,7 @@ public class ResourceIdentify implements IPartibleIdentify<String> {
         if (resourceId.indexOf(SEPARATOR) <= 0) {
             throw new InvalidArgumentException(resourceId, InvalidArgumentException.InvalidArgumentType.FORMAT);
         } else {
-            String[] combined = resourceId.split(SEPARATOR);
+            var combined = resourceId.split(SEPARATOR);
             if (combined.length == 2) {
                 return new ResourceIdentify(combined[0], combined[1]);
             } else {

@@ -22,9 +22,9 @@ public class GraphQLDecoder implements IProtocolDecoder {
     public ResourceProcessing decode(
             final ResourceProcessing resourceProcessing
     ) {
-        IHttpRequest httpRequest = (IHttpRequest) resourceProcessing.originalRequest();
+        var httpRequest = (IHttpRequest) resourceProcessing.originalRequest();
         if (httpRequest.method() == HttpMethod.GET) {
-            List<String> queryParams = httpRequest.param("query");
+            var queryParams = httpRequest.param("query");
             if (queryParams.size() != 1) {
                 throw GraphQLException.builder()
                         .errorCode(GraphQLErrors.ONE_QUERY_PARAM_FOR_GET)
@@ -32,7 +32,7 @@ public class GraphQLDecoder implements IProtocolDecoder {
             }
             // todo: parse query parameter
         } else if (httpRequest.method() == HttpMethod.POST) {
-            String body = httpRequest.body().getString("UTF-8");
+            var body = httpRequest.body().getString("UTF-8");
             // todo: parse post body
         } else {
             throw GraphQLException.builder()
