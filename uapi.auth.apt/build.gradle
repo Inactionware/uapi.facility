@@ -12,16 +12,27 @@ plugins {
 }
 
 dependencies {
+    compileOnly (
+        coordinate(cornerstoneProjects.service_apt),
+        coordinate(cornerstoneProjects.behavior_apt)
+    )
+
+    annotationProcessor (
+        coordinate(libs.auto_service),
+        coordinate(baseProjects.codegen)
+        // coordinate(cornerstoneProjects.service_apt),
+        // coordinate(cornerstoneProjects.behavior_apt)
+    )
+
     compile (
         project(':uapi.resource'),
         project(':uapi.auth'),
 
         coordinate(baseProjects.common),
         coordinate(baseProjects.exception),
-        coordinate(baseProjects.codegen),
-        coordinate(cornerstoneProjects.service_apt),
+        // coordinate(baseProjects.codegen),
+        
         coordinate(cornerstoneProjects.behavior),
-        coordinate(cornerstoneProjects.behavior_apt)
     )
 }
 

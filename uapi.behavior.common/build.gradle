@@ -12,13 +12,23 @@ plugins {
 }
 
 dependencies {
+    compileOnly (
+        coordinate(cornerstoneProjects.service_apt),
+        coordinate(cornerstoneProjects.behavior_apt)
+    )
+
+    annotationProcessor (
+        coordinate(cornerstoneProjects.behavior_apt),
+        coordinate(cornerstoneProjects.service_apt),
+        coordinate(baseProjects.codegen),
+        coordinate(libs.auto_service)
+    )
+
     compile (
         coordinate(baseProjects.common),
         coordinate(baseProjects.exception),
         coordinate(cornerstoneProjects.service),
-        coordinate(cornerstoneProjects.service_apt),
-        coordinate(cornerstoneProjects.behavior),
-        coordinate(cornerstoneProjects.behavior_apt)
+        coordinate(cornerstoneProjects.behavior)
     )
 }
 

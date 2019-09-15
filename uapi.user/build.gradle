@@ -18,7 +18,16 @@ dependencies {
 
         coordinate(cornerstoneProjects.service_apt),
         coordinate(cornerstoneProjects.behavior_apt)
-        
+    )
+
+    annotationProcessor (
+        project(':uapi.resource.apt'),
+        project(':uapi.auth.apt'),
+
+        coordinate(cornerstoneProjects.service_apt),
+        coordinate(cornerstoneProjects.behavior_apt),
+        coordinate(baseProjects.codegen),
+        coordinate(libs.auto_service)
     )
 
     compile (

@@ -17,6 +17,11 @@ dependencies {
         coordinate(cornerstoneProjects.behavior_apt)
     )
 
+    annotationProcessor (
+        coordinate(baseProjects.codegen),
+        coordinate(libs.auto_service)
+    )
+
     compile (
         project (':uapi.resource'),
 

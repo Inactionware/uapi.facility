@@ -17,6 +17,13 @@ dependencies {
         coordinate(cornerstoneProjects.behavior_apt)
     )
 
+    annotationProcessor (
+        coordinate(cornerstoneProjects.service_apt),
+        coordinate(cornerstoneProjects.behavior_apt),
+        coordinate(baseProjects.codegen),
+        coordinate(libs.auto_service)
+    )
+
     compile (
         project(':uapi.net'),
         project(':uapi.net.http'),
