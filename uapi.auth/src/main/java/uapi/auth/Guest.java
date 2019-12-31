@@ -7,17 +7,17 @@
  *  use the project into a commercial product
  */
 
-package uapi.user;
+package uapi.auth;
 
-public class Anonymous implements IUser {
+public class Guest implements IRole {
 
     @Override
     public String name() {
-        return ANONYMOUS;
+        return GUEST;
     }
 
     @Override
-    public IRole[] roles() {
-        return new IRole[0];
+    public IPermission[] permissions() {
+        return new IPermission[0];
     }
 }

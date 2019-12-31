@@ -1,4 +1,4 @@
-package uapi.user;
+package uapi.auth;
 
 import uapi.auth.IPermission;
 

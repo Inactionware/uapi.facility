@@ -26,13 +26,13 @@ dependencies {
 
         coordinate(cornerstoneProjects.service_apt),
         coordinate(cornerstoneProjects.behavior_apt),
-        coordinate(baseProjects.codegen),
-        coordinate(libs.auto_service)
+        coordinate(baseProjects.codegen)
     )
 
     compile (
         project(':uapi.resource'),
         project(':uapi.auth'),
+        project(':uapi.protocol'),
 
         coordinate(baseProjects.common),
         coordinate(baseProjects.exception),

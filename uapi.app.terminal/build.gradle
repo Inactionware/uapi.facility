@@ -18,7 +18,6 @@ dependencies {
 
     annotationProcessor (
         coordinate(baseProjects.codegen),
-        coordinate(libs.auto_service),
         coordinate(cornerstoneProjects.service_apt)
     )
 

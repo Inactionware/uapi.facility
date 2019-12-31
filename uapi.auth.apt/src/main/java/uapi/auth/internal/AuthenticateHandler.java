@@ -10,7 +10,6 @@
 package uapi.auth.internal;
 
 import com.google.auto.service.AutoService;
-import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
 import uapi.auth.IPermission;
@@ -19,12 +18,13 @@ import uapi.auth.annotation.Authenticate;
 import uapi.auth.annotation.Authenticates;
 import uapi.behavior.*;
 import uapi.behavior.annotation.Action;
+import uapi.behavior.annotation.helper.IActionHandlerHelper;
 import uapi.codegen.*;
 import uapi.common.StringHelper;
 import uapi.resource.IResourceTypeManager;
 import uapi.rx.Looper;
-import uapi.service.IInjectableHandlerHelper;
-import uapi.service.IServiceHandlerHelper;
+import uapi.service.annotation.helper.IInjectableHandlerHelper;
+import uapi.service.annotation.helper.IServiceHandlerHelper;
 import uapi.service.QualifiedServiceId;
 
 import javax.lang.model.element.Element;
@@ -32,7 +32,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @AutoService(IAnnotationsHandler.class)
@@ -89,9 +88,10 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Element classElement,
             final String interceptorClass
     ) {
+        var moduleName = this.getClass().getModule().getName();
         var model = new HashMap<String, Object>();
         model.put("interceptorClass", interceptorClass);
-        var temp = builderContext.loadTemplate(TEMP_BY);
+        var temp = builderContext.loadTemplate(moduleName, TEMP_BY);
 
         var classBuilder = builderContext.findClassBuilder(classElement);
         classBuilder.addImplement(IIntercepted.class)
@@ -111,6 +111,7 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Authenticate[] anthenticates,
             final IActionHandlerHelper.ActionMethodMeta actionMethodMeta
     ) {
+        var moduleName = this.getClass().getModule().getName();
         final var pkgName = builderContext.packageName(classElement);
         final var clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
 
@@ -119,9 +120,9 @@ public class AuthenticateHandler extends AnnotationsHandler {
         var model = new HashMap<String, Object>();
         model.put("authenticates", anthenticates);
         model.put("actionParameterMetas", actionMethodMeta.parameterMetas());
-        var tempInputMetas = builderContext.loadTemplate(TEMPLATE_INPUT_METAS);
-        var tempProc = builderContext.loadTemplate(TEMP_PROCESS);
-        var tempConstructor = builderContext.loadTemplate(TEMP_INTERC_CONSTR);
+        var tempInputMetas = builderContext.loadTemplate(moduleName, TEMPLATE_INPUT_METAS);
+        var tempProc = builderContext.loadTemplate(moduleName, TEMP_PROCESS);
+        var tempConstructor = builderContext.loadTemplate(moduleName, TEMP_INTERC_CONSTR);
 
         var classBuilder = builderContext.newClassBuilder(pkgName, clsName);
         IServiceHandlerHelper svcHelper = builderContext.getHelper(IServiceHandlerHelper.name);

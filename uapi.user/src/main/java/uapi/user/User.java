@@ -9,6 +9,8 @@
 
 package uapi.user;
 
+import uapi.auth.IRole;
+import uapi.auth.IUser;
 import uapi.resource.ResourceIdentify;
 import uapi.resource.annotation.Resource;
 

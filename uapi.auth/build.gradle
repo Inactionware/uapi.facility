@@ -20,8 +20,7 @@ dependencies {
 
     annotationProcessor (
         coordinate(cornerstoneProjects.service_apt),
-        coordinate(baseProjects.codegen),
-        coordinate(libs.auto_service)
+        coordinate(baseProjects.codegen)
     )
 
     compile (
@@ -30,6 +29,7 @@ dependencies {
 
         coordinate(baseProjects.common),
         coordinate(baseProjects.exception),
+        coordinate(cornerstoneProjects.service),
         coordinate(cornerstoneProjects.behavior)
     )
 }

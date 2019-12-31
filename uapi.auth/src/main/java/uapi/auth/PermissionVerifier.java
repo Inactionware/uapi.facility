@@ -9,15 +9,9 @@
 
 package uapi.auth;
 
-import uapi.net.IRequest;
-import uapi.net.ISession;
 import uapi.protocol.ResourceProcessing;
 import uapi.resource.*;
 import uapi.rx.Looper;
-import uapi.user.IUser;
-import uapi.user.Anonymous;
-
-import java.util.List;
 
 public abstract class PermissionVerifier {
 
