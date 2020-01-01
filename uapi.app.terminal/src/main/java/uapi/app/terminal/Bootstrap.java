@@ -13,7 +13,7 @@ import uapi.UapiException;
 import uapi.app.AppErrors;
 import uapi.app.AppException;
 import uapi.app.SystemBootstrap;
-import uapi.app.internal.SystemShuttingDownEvent;
+import uapi.app.SystemShuttingDownEvent;
 import uapi.app.terminal.internal.CliConfigProvider;
 import uapi.event.IAttributedEventHandler;
 import uapi.event.IEventBus;

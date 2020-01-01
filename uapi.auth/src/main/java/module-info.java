@@ -11,6 +11,7 @@ module uapi.auth {
     requires uapi.behavior;
     requires uapi.resource;
     requires uapi.protocol;
+    requires uapi.net;
 
     exports uapi.auth;
 

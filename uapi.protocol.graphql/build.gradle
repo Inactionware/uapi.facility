@@ -23,6 +23,7 @@ dependencies {
 
     compile (
         project(':uapi.net'),
+        project(':uapi.net.http'),
         project(':uapi.protocol'),
 
         coordinate(baseProjects.common),

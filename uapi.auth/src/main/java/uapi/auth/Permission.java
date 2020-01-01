@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.auth.internal;
+package uapi.auth;
 
 import uapi.auth.IPermission;
 import uapi.resource.ResourceIdentify;

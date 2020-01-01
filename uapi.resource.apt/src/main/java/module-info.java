@@ -1,4 +1,5 @@
 module uapi.resource.apt {
+    requires java.compiler;
     requires auto.service.annotations;
     requires uapi.codegen;
     requires uapi.service.apt;

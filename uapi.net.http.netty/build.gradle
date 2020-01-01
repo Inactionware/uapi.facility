@@ -32,6 +32,7 @@ dependencies {
         coordinate(baseProjects.state),
         coordinate(cornerstoneProjects.service),
         coordinate(cornerstoneProjects.config),
+        coordinate(cornerstoneProjects.event),
 
         coordinate(libs.netty)
     )

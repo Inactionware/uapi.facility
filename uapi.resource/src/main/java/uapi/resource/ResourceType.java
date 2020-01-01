@@ -7,7 +7,7 @@
  *  use the project into a commercial product
  */
 
-package uapi.resource.internal;
+package uapi.resource;
 
 import uapi.common.ArgumentChecker;
 import uapi.resource.IResource;

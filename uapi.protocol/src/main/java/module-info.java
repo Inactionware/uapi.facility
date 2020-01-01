@@ -10,6 +10,8 @@ module uapi.protocol {
     requires uapi.exception;
     requires uapi.service;
     requires uapi.behavior;
+    requires uapi.net;
+    requires uapi.net.http;
 
     exports uapi.protocol;
 

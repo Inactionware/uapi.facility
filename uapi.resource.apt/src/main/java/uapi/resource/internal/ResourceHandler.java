@@ -10,22 +10,21 @@
 package uapi.resource.internal;
 
 import com.google.auto.service.AutoService;
-import freemarker.template.Template;
 import uapi.GeneralException;
 import uapi.Type;
 import uapi.codegen.*;
 import uapi.common.StringHelper;
 import uapi.resource.IResourceType;
+import uapi.resource.ResourceType;
 import uapi.resource.annotation.Resource;
 import uapi.rx.Looper;
-import uapi.service.IService;
+import uapi.service.annotation.helper.IServiceHandlerHelper;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @AutoService(IAnnotationsHandler.class)
@@ -75,34 +74,37 @@ public class ResourceHandler extends AnnotationsHandler {
             final ClassMeta.Builder classBuilder,
             final IBuilderContext builderCtx
     ) {
-        var model = new HashMap<String, Object>();
-        model.put(VAR_SVC_IDS, new String[] { IResourceType.class.getCanonicalName() });
+        IServiceHandlerHelper svcHelper = builderCtx.getHelper(IServiceHandlerHelper.name);
+        svcHelper.becomeService(builderCtx, classBuilder, IResourceType.class.getCanonicalName());
 
-        var tempGetIds = builderCtx.loadTemplate(TEMP_GET_IDS);
-
-        classBuilder.addImplement(IService.class)
-                .addAnnotationBuilder(AnnotationMeta.builder()
-                        .setName(AutoService.class.getCanonicalName())
-                        .addArgument(ArgumentMeta.builder()
-                                .setName("value")
-                                .setIsString(false)
-                                .setValue(IService.class.getCanonicalName() + ".class")))
-                .addImplement(IService.class.getCanonicalName())
-                .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
-                        .setName(IService.METHOD_AUTOACTIVE)
-                        .addModifier(Modifier.PUBLIC)
-                        .setReturnTypeName(IService.METHOD_AUTOACTIVE_RETURN_TYPE)
-                        .addCodeBuilder(CodeMeta.builder()
-                                .addRawCode(StringHelper.makeString("return {};", false))))
-                .addMethodBuilder(MethodMeta.builder()
-                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
-                        .setName(IService.METHOD_GETIDS)
-                        .addModifier(Modifier.PUBLIC)
-                        .setReturnTypeName(IService.METHOD_GETIDS_RETURN_TYPE)
-                        .addCodeBuilder(CodeMeta.builder()
-                                .setModel(model)
-                                .setTemplate(tempGetIds)));
+//        var model = new HashMap<String, Object>();
+//        model.put(VAR_SVC_IDS, new String[] { IResourceType.class.getCanonicalName() });
+//
+//        var tempGetIds = builderCtx.loadTemplate(this.getClass().getModule().getName(), TEMP_GET_IDS);
+//
+//        classBuilder.addImplement(IService.class)
+//                .addAnnotationBuilder(AnnotationMeta.builder()
+//                        .setName(AutoService.class.getCanonicalName())
+//                        .addArgument(ArgumentMeta.builder()
+//                                .setName("value")
+//                                .setIsString(false)
+//                                .setValue(IService.class.getCanonicalName() + ".class")))
+//                .addImplement(IService.class.getCanonicalName())
+//                .addMethodBuilder(MethodMeta.builder()
+//                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+//                        .setName(IService.METHOD_AUTOACTIVE)
+//                        .addModifier(Modifier.PUBLIC)
+//                        .setReturnTypeName(IService.METHOD_AUTOACTIVE_RETURN_TYPE)
+//                        .addCodeBuilder(CodeMeta.builder()
+//                                .addRawCode(StringHelper.makeString("return {};", false))))
+//                .addMethodBuilder(MethodMeta.builder()
+//                        .addAnnotationBuilder(AnnotationMeta.builder().setName(AnnotationMeta.OVERRIDE))
+//                        .setName(IService.METHOD_GETIDS)
+//                        .addModifier(Modifier.PUBLIC)
+//                        .setReturnTypeName(IService.METHOD_GETIDS_RETURN_TYPE)
+//                        .addCodeBuilder(CodeMeta.builder()
+//                                .setModel(model)
+//                                .setTemplate(tempGetIds)));
     }
 
     private void implementIResourceType(

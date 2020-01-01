@@ -24,7 +24,7 @@ import uapi.net.INetChannelHandler;
 import uapi.net.NetException;
 import uapi.net.telnet.ITelnetListener;
 import uapi.net.telnet.TelnetAttributes;
-import uapi.service.ServiceType;
+import uapi.service.annotation.helper.ServiceType;
 import uapi.service.annotation.Attribute;
 import uapi.service.annotation.Service;
 

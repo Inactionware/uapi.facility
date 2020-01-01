@@ -11,6 +11,9 @@ module uapi.net.http.netty {
     requires uapi.state;
     requires uapi.service;
     requires uapi.config;
+    requires uapi.event;
+    requires uapi.net;
+    requires uapi.net.http;
     requires netty.all;
 
     provides IModulePortal with NetHttpNettyModulePortal;

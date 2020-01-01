@@ -37,8 +37,10 @@ import java.util.Set;
 @AutoService(IAnnotationsHandler.class)
 public class AuthenticateHandler extends AnnotationsHandler {
 
+    private static final String MODULE_NAME             = "uapi.auth.apt";
+
     private static final String TEMP_BY                 = "template/by_method.ftl";
-    private static final String TEMPLATE_INPUT_METAS    = "template/inputMetas_method.ftl";
+    private static final String TEMPLATE_INPUT_METAS    = "template/interceptor_inputMetas_method.ftl";
     private static final String TEMP_PROCESS            = "template/interceptor_process_method.ftl";
     private static final String TEMP_INTERC_CONSTR      = "template/interceptor_constructor.ftl";
 
@@ -88,10 +90,9 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Element classElement,
             final String interceptorClass
     ) {
-        var moduleName = this.getClass().getModule().getName();
         var model = new HashMap<String, Object>();
         model.put("interceptorClass", interceptorClass);
-        var temp = builderContext.loadTemplate(moduleName, TEMP_BY);
+        var temp = builderContext.loadTemplate(MODULE_NAME, TEMP_BY);
 
         var classBuilder = builderContext.findClassBuilder(classElement);
         classBuilder.addImplement(IIntercepted.class)
@@ -111,7 +112,6 @@ public class AuthenticateHandler extends AnnotationsHandler {
             final Authenticate[] anthenticates,
             final IActionHandlerHelper.ActionMethodMeta actionMethodMeta
     ) {
-        var moduleName = this.getClass().getModule().getName();
         final var pkgName = builderContext.packageName(classElement);
         final var clsName = "Interceptor_" + classElement.getSimpleName().toString() + "_Generated";
 
@@ -120,9 +120,9 @@ public class AuthenticateHandler extends AnnotationsHandler {
         var model = new HashMap<String, Object>();
         model.put("authenticates", anthenticates);
         model.put("actionParameterMetas", actionMethodMeta.parameterMetas());
-        var tempInputMetas = builderContext.loadTemplate(moduleName, TEMPLATE_INPUT_METAS);
-        var tempProc = builderContext.loadTemplate(moduleName, TEMP_PROCESS);
-        var tempConstructor = builderContext.loadTemplate(moduleName, TEMP_INTERC_CONSTR);
+        var tempInputMetas = builderContext.loadTemplate(MODULE_NAME, TEMPLATE_INPUT_METAS);
+        var tempProc = builderContext.loadTemplate(MODULE_NAME, TEMP_PROCESS);
+        var tempConstructor = builderContext.loadTemplate(MODULE_NAME, TEMP_INTERC_CONSTR);
 
         var classBuilder = builderContext.newClassBuilder(pkgName, clsName);
         IServiceHandlerHelper svcHelper = builderContext.getHelper(IServiceHandlerHelper.name);

@@ -24,7 +24,7 @@ import uapi.net.http.HttpAttributes;
 import uapi.net.http.HttpErrors;
 import uapi.net.http.HttpException;
 import uapi.net.http.IHttpListener;
-import uapi.service.ServiceType;
+import uapi.service.annotation.helper.ServiceType;
 import uapi.service.annotation.Attribute;
 import uapi.service.annotation.Inject;
 import uapi.service.annotation.Service;

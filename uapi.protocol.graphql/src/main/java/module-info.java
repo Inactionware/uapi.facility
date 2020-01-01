@@ -9,6 +9,7 @@ module uapi.protocol.graphql {
     requires uapi.exception;
     requires uapi.service;
     requires uapi.net;
+    requires uapi.net.http;
     requires uapi.protocol;
 
     provides IModulePortal with ProtocolGraphqlModulePortal;

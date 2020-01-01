@@ -10,6 +10,7 @@ module uapi.net.http {
     requires uapi.state;
     requires uapi.service;
     requires uapi.behavior;
+    requires uapi.net;
 
     exports uapi.net.http;
 

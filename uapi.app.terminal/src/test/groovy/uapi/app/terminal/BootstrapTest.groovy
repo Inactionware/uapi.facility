@@ -11,15 +11,17 @@ package uapi.app.terminal
 
 import spock.lang.Ignore
 import spock.lang.Specification
+import uapi.IModulePortal
 import uapi.app.AppException
 import uapi.app.SystemBootstrap
 import uapi.app.internal.AppServiceLoader
-import uapi.app.internal.SystemShuttingDownEvent
+import uapi.app.SystemShuttingDownEvent
 import uapi.app.internal.SystemStartingUpEvent
 import uapi.app.terminal.internal.CliConfigProvider
 import uapi.event.IEventBus
 import uapi.service.IRegistry
 import uapi.service.IService
+import uapi.service.IServiceModulePortal
 import uapi.service.ITagged
 
 /**
@@ -30,7 +32,7 @@ class BootstrapTest extends Specification {
     def 'Test start up with zero registry'() {
         given:
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> []
+            load(IModulePortal.class) >> []
         }
 
         when:
@@ -44,7 +46,9 @@ class BootstrapTest extends Specification {
         given:
         def registry = Mock(IRegistryService)
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> [registry, registry]
+            load(IModulePortal.class) >> [ Mock(IServiceModulePortal) {
+                loadService() >> [registry, registry]
+            }]
         }
 
         when:
@@ -59,7 +63,9 @@ class BootstrapTest extends Specification {
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> null
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> [registry]
+            load(IModulePortal.class) >> [ Mock(IServiceModulePortal) {
+                loadService() >> [registry]
+            }]
         }
 
         when:
@@ -74,7 +80,9 @@ class BootstrapTest extends Specification {
         def registry = Mock(IRegistryService)
         registry.findService(IRegistry.class) >> registry
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> [registry]
+            load(IModulePortal.class) >> [ Mock(IServiceModulePortal) {
+                loadService() >> [registry]
+            }]
         }
 
         when:
@@ -96,7 +104,9 @@ class BootstrapTest extends Specification {
             1 * parse(_)
         }
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> [registry]
+            load(IModulePortal.class) >> [ Mock(IServiceModulePortal) {
+                loadService() >> [registry]
+            }]
         }
 
         when:
@@ -126,7 +136,9 @@ class BootstrapTest extends Specification {
             1 * parse(_)
         }
         SystemBootstrap.appSvcLoader = Mock(AppServiceLoader) {
-            loadServices() >> [registry, taggedSvc]
+            load(IModulePortal.class) >> [ Mock(IServiceModulePortal) {
+                loadService() >> [registry, taggedSvc]
+            }]
         }
 
         when:

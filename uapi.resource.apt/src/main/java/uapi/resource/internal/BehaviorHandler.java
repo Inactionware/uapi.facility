@@ -79,7 +79,7 @@ public class BehaviorHandler extends AnnotationsHandler {
 
             var resource = classElement.getSimpleName().toString();
             var clsBuilder = builderContext.findClassBuilder(classElement);
-            var temp = builderContext.loadTemplate(TEMP_INIT_BEHAVIOR);
+            var temp = builderContext.loadTemplate(this.getClass().getModule().getName(), TEMP_INIT_BEHAVIOR);
             var model = clsBuilder.createTransienceIfAbsent(MODEL_INIT_BEHAVIOR, HashMap::new);
             var behaviors = (List<BehaviorModel>) model.get("behaviors");
             if (behaviors == null) {
