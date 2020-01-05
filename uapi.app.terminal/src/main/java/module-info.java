@@ -15,6 +15,7 @@ module uapi.app.terminal {
     requires com.google.common;
 
     exports uapi.app.terminal;
+    exports uapi.app.terminal.generated to uapi.service;
 
     provides IModulePortal with AppTerminalModulePortal;
 }

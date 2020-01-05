@@ -12,15 +12,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly (
-        coordinate(cornerstoneProjects.service_apt)
-    )
-
-    annotationProcessor (
-        coordinate(cornerstoneProjects.service_apt),
-        coordinate(baseProjects.codegen)
-    )
-
     compile (
         coordinate(baseProjects.common),
         coordinate(baseProjects.exception),

@@ -12,17 +12,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly (
-        coordinate(cornerstoneProjects.service_apt),
-        // coordinate(baseProjects.codegen),
-        // coordinate(libs.auto_service)
-    )
-
-    annotationProcessor (
-        coordinate(cornerstoneProjects.service_apt),
-        coordinate(baseProjects.codegen)
-    )
-
     compile (
         project(':uapi.resource'),
         project(':uapi.protocol'),

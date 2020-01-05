@@ -14,6 +14,7 @@ module uapi.protocol {
     requires uapi.net.http;
 
     exports uapi.protocol;
+    exports uapi.protocol.generated to uapi.service;
 
     provides IModulePortal with ProtocolModulePortal;
 }

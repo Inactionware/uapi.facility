@@ -13,6 +13,7 @@ module uapi.service.spring {
     requires spring.context;
 
     exports uapi.service.spring;
+    exports uapi.service.spring.generated to uapi.service;
 
     provides IModulePortal with ServiceSpringModulePortal;
 }

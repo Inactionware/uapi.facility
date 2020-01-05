@@ -12,6 +12,7 @@ module uapi.behavior.common {
     requires uapi.behavior;
 
     exports uapi.behavior.common.action;
+    exports uapi.behavior.common.generated to uapi.service;
 
     provides IModulePortal with BehaviorCommonModulePortal;
 }

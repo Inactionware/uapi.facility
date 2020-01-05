@@ -12,5 +12,7 @@ module uapi.protocol.graphql {
     requires uapi.net.http;
     requires uapi.protocol;
 
+    exports uapi.protocol.graphql.generated to uapi.service;
+
     provides IModulePortal with ProtocolGraphqlModulePortal;
 }

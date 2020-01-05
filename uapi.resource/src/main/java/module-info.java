@@ -13,6 +13,7 @@ module uapi.resource {
     requires uapi.behavior;
 
     exports uapi.resource;
+    exports uapi.resource.generated to uapi.service;
 
     provides IModulePortal with ResourceModulePortal;
 }

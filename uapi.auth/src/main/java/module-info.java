@@ -2,9 +2,6 @@ import uapi.IModulePortal;
 import uapi.auth.internal.AuthModulePortal;
 
 module uapi.auth {
-    requires static uapi.codegen;
-    requires static uapi.service.apt;
-
     requires uapi.common;
     requires uapi.exception;
     requires uapi.service;

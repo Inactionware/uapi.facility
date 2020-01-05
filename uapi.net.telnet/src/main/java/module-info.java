@@ -12,6 +12,7 @@ module uapi.telnet {
     requires netty.all;
 
     exports uapi.net.telnet;
+    exports uapi.telnet.generated to uapi.service;
 
     provides IModulePortal with NetTelnetModulePortal;
 }

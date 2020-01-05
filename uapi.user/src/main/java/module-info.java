@@ -17,6 +17,7 @@ module uapi.user {
     requires uapi.protocol;
 
     exports uapi.user;
+    exports uapi.user.generated to uapi.service;
 
     provides IModulePortal with UserModulePortal;
 }
