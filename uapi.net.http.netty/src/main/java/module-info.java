@@ -14,7 +14,7 @@ module uapi.net.http.netty {
     requires uapi.event;
     requires uapi.net;
     requires uapi.net.http;
-    requires netty.all;
+    requires io.netty.all;
 
     exports uapi.net.http.netty.generated to uapi.service;
 

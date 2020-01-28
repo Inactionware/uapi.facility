@@ -9,7 +9,7 @@ module uapi.telnet {
     requires uapi.exception;
     requires uapi.service;
     requires uapi.net;
-    requires netty.all;
+    requires io.netty.all;
 
     exports uapi.net.telnet;
     exports uapi.telnet.generated to uapi.service;

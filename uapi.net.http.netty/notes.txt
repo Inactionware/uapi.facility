@@ -1,0 +1,7 @@
+Upgrade to java 9 and above version, Netty will throw ClassNotFound exception for sun.misc.UnSafe, add below statement in module.info file:
+    requires jdk.unsupported;
+
+Upgrade to java 9 and above version, Netty will throw some IllegalAccessException, add below in vm arguments:
+    --add-opens java.base/jdk.internal.misc=io.netty.all
+    --add-opens java.base/java.nio=io.netty.all
+    -Dio.netty.tryReflectionSetAccessible=true
